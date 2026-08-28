@@ -63,9 +63,9 @@ function ensurePopover() {
       <button type="button" data-step="hour" data-delta="1">+</button>
     </div>
     <div class="time-popover-row">
-      <button type="button" data-step="minute" data-delta="-5">−</button>
+      <button type="button" data-step="minute" data-delta="-1">−</button>
       <span class="time-popover-val" data-part="minute"></span>
-      <button type="button" data-step="minute" data-delta="5">+</button>
+      <button type="button" data-step="minute" data-delta="1">+</button>
     </div>
     <button type="button" class="time-popover-ampm" data-step="ampm"></button>
   `;
