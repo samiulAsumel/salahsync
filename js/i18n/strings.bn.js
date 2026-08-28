@@ -45,21 +45,11 @@ export const STRINGS_BN = {
     sectionOffice: 'অফিস (রবি–বৃহস্পতি)', sectionCommuteSleep: 'যাতায়াত ও ঘুম',
     fieldCommuteTo: 'অফিসে যেতে সময় (মিনিট)', fieldCommuteFrom: 'অফিস থেকে ফিরতে সময় (মিনিট)',
     fieldBedtime: 'ঘুমানোর সময়', fieldTargetSleep: 'লক্ষ্য ঘুম (ঘণ্টা)', fieldHijriOffset: 'হিজরি দিন সমন্বয়',
-    sectionDurations: 'সময়কাল (মিনিট)', sectionData: 'ডেটা',
+    sectionData: 'ডেটা',
     btnExport: 'এক্সপোর্ট (JSON)', btnImport: 'ইম্পোর্ট', btnReset: 'রিসেট',
     confirmReset: 'সব সেটিংস ডিফল্টে ফিরিয়ে দিতে চান?',
     toastImported: 'ব্যাকআপ থেকে ডেটা লোড হয়েছে', toastImportError: 'ফাইলটি সঠিক নয়',
     toastReset: 'সেটিংস রিসেট হয়েছে', toastUpdated: 'সেটিংস আপডেট হয়েছে',
-  },
-
-  duration: {
-    tahajjud: 'তাহাজ্জুদ', sunnahTilawat: 'ফজরের সুন্নত+তিলাওয়াত', mosqueReturn: 'মসজিদ থেকে ফেরা',
-    jamaatWalk: 'মসজিদে যাওয়ার সময়', fajrJamaatDuration: 'ফজর জামাতের দৈর্ঘ্য', jamaatPrayer: 'ওয়াক্ত নামাজের দৈর্ঘ্য',
-    breakfast: 'নাস্তা', ishaMeal: 'এশা + খাবার', codingPractice: 'সন্ধ্যার কোডিং প্র্যাকটিস', reading: 'বই পড়া',
-    windDown: 'ঘুমের প্রস্তুতি (সর্বনিম্ন)', minMorningCoding: 'সকালের কোডিং (সর্বনিম্ন)', minWeekendCoding: 'ছুটির কোডিং (সর্বনিম্ন)',
-    weekendEarlyCoding: 'ছুটির সকালের কোডিং', jummaPrep: 'জুম্মার প্রস্তুতি', jummaDuration: 'জুম্মার নামাজ+খুতবা',
-    lunchRest: 'দুপুরের খাবার+বিশ্রাম', eveningLightCoding: 'সন্ধ্যার হালকা কাজ', afternoonReading: 'বিকেলের পড়া',
-    weekReview: 'সপ্তাহের রিভিউ', officeBreakDhuhr: 'যোহরের অফিস-বিরতি', officeBreakAsr: 'আসরের অফিস-বিরতি', officeBreakMaghrib: 'মাগরিবের অফিস-বিরতি',
   },
 
   loc: {

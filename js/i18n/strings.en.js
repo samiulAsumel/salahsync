@@ -45,21 +45,11 @@ export const STRINGS_EN = {
     sectionOffice: 'Office (Sun–Thu)', sectionCommuteSleep: 'Commute & Sleep',
     fieldCommuteTo: 'Time to reach office (min)', fieldCommuteFrom: 'Time to return from office (min)',
     fieldBedtime: 'Bedtime', fieldTargetSleep: 'Target sleep (hours)', fieldHijriOffset: 'Hijri day adjustment',
-    sectionDurations: 'Durations (minutes)', sectionData: 'Data',
+    sectionData: 'Data',
     btnExport: 'Export (JSON)', btnImport: 'Import', btnReset: 'Reset',
     confirmReset: 'Reset all settings to default?',
     toastImported: 'Data loaded from backup', toastImportError: 'Invalid file',
     toastReset: 'Settings reset', toastUpdated: 'Settings updated',
-  },
-
-  duration: {
-    tahajjud: 'Tahajjud', sunnahTilawat: 'Fajr Sunnah + Tilawat', mosqueReturn: 'Return from Mosque',
-    jamaatWalk: 'Time to Mosque', fajrJamaatDuration: 'Fajr Jamaah Duration', jamaatPrayer: 'Waqt Prayer Duration',
-    breakfast: 'Breakfast', ishaMeal: 'Isha + Meal', codingPractice: 'Evening Coding Practice', reading: 'Reading',
-    windDown: 'Wind-down (minimum)', minMorningCoding: 'Morning Coding (minimum)', minWeekendCoding: 'Weekend Coding (minimum)',
-    weekendEarlyCoding: 'Weekend Morning Coding', jummaPrep: 'Jumma Prep', jummaDuration: 'Jumma Prayer + Khutbah',
-    lunchRest: 'Lunch + Rest', eveningLightCoding: 'Evening Light Work', afternoonReading: 'Afternoon Reading',
-    weekReview: 'Week Review', officeBreakDhuhr: 'Dhuhr Office Break', officeBreakAsr: 'Asr Office Break', officeBreakMaghrib: 'Maghrib Office Break',
   },
 
   loc: {

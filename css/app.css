@@ -94,7 +94,6 @@ body { min-height: 100vh; }
 #settings-panel h3 { font-size: .85rem; font-weight: 700; color: var(--forest); margin-bottom: .5rem; border-bottom: 1px solid var(--line); padding-bottom: .25rem; }
 .field { display: flex; flex-direction: column; gap: .2rem; font-size: .75rem; margin-bottom: .5rem; }
 .field input, .field select { border: 1px solid var(--line); border-radius: .25rem; padding: .3rem .4rem; background: var(--paper); color: var(--ink); font-size: .8rem; }
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 .6rem; }
 .grid-5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: .4rem; }
 .office-row { display: grid; grid-template-columns: 3.2rem 1fr 1fr; gap: .4rem; align-items: center; font-size: .75rem; margin-bottom: .4rem; }
 .office-row input { border: 1px solid var(--line); border-radius: .25rem; padding: .25rem; background: var(--paper); color: var(--ink); }

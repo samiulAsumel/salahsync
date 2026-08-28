@@ -52,12 +52,6 @@ export function renderSettingsPanel(container) {
       ${field(t('settings.fieldHijriOffset'), num('hijriDayOffset', s.hijriDayOffset))}
     </section>
 
-    <section><h3>${t('settings.sectionDurations')}</h3>
-      <div class="grid-2">
-        ${Object.entries(s.durations).map(([k, v]) => field(t('duration.' + k), num(`durations.${k}`, v))).join('')}
-      </div>
-    </section>
-
     <section><h3>${t('settings.sectionData')}</h3>
       <div class="data-actions">
         <button type="button" id="btn-export">${t('settings.btnExport')}</button>
