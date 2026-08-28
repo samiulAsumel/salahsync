@@ -1,0 +1,14 @@
+{
+  "name": "daily-routine-app",
+  "version": "1.0.0",
+  "description": "ফজরের ওয়াক্ত থেকে স্বয়ংক্রিয়ভাবে তৈরি হওয়া মুসলিম ডেইলি লাইফ ট্র্যাকার — অফিস, কোডিং ও ইবাদতের সময়সূচি সহ।",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "./serve.sh",
+    "build:css": "tailwindcss -i ./css/app.css -o ./css/tailwind.build.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10493B">
+<title>দৈনিক রুটিন — সামিউল</title>
+<meta name="description" content="ফজরের ওয়াক্ত সেট করলেই সারাদিনের রুটিন স্বয়ংক্রিয়ভাবে তৈরি হয় — নামাজ, কোডিং, অফিস ও ইবাদতের সময়সূচি।">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Tiro+Bangla&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="./css/fonts.css">
+<link rel="stylesheet" href="./css/app.css">
+</head>
+<body class="pb-16">
+
+<div class="max-w-3xl mx-auto px-4 pt-6">
+
+  <header class="card p-5 mb-4">
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <p class="eyebrow">মুসলিম ডেইলি লাইফ ট্র্যাকার</p>
+        <h1 class="text-2xl font-bold" style="font-family:'Tiro Bangla', serif; color:var(--forest-deep)">দৈনিক রুটিন</h1>
+        <p id="now-date" class="text-xs mt-1" style="color:var(--muted)"></p>
+      </div>
+      <div class="text-right flex flex-col items-end gap-2">
+        <span id="now-clock" class="text-2xl font-bold" style="color:var(--forest)"></span>
+        <div class="flex gap-2">
+          <button id="theme-toggle" class="text-lg" title="থিম পরিবর্তন">🌙</button>
+          <button id="install-btn" class="text-lg hidden" title="অ্যাপ ইনস্টল করুন">⬇️</button>
+          <button id="print-btn" class="text-lg" title="প্রিন্ট করুন">🖨️</button>
+          <button id="settings-toggle" class="text-lg" title="সেটিংস">⚙️</button>
+        </div>
+      </div>
+    </div>
+    <p id="countdown" class="text-sm mt-3 font-medium" style="color:var(--forest)"></p>
+  </header>
+
+  <div class="flex items-center justify-between mb-4">
+    <div id="tabs" class="flex gap-2">
+      <button data-profile="workday">কর্মদিবস</button>
+      <button data-profile="friday">জুম্মাবার</button>
+      <button data-profile="saturday">শনিবার</button>
+    </div>
+    <span id="profile-sub" class="text-xs" style="color:var(--muted)"></span>
+  </div>
+
+  <div id="warnings-banner" class="hidden"></div>
+
+  <div id="stats-cards" class="stats mb-4"></div>
+
+  <main class="card p-5 mb-4">
+    <ol id="timeline" class="rows"></ol>
+  </main>
+
+  <section class="card p-5 mb-4">
+    <h2 class="text-sm font-bold mb-3" style="color:var(--forest)">আজকের আমল ট্র্যাকার</h2>
+    <div id="habits-panel"></div>
+  </section>
+
+  <section class="card p-5 mb-4">
+    <h2 class="text-sm font-bold mb-3" style="color:var(--forest)">অগ্রগতি</h2>
+    <div id="streak-panel" class="flex gap-3 mb-4"></div>
+    <div id="chart-panel"></div>
+  </section>
+
+  <footer class="text-center text-xs pb-6" style="color:var(--muted)">
+    <span id="footer-location">মংলা, বাংলাদেশ</span> · দৈনিক রুটিন অ্যাপ
+  </footer>
+</div>
+
+<div id="settings-drawer">
+  <div id="settings-backdrop"></div>
+  <aside id="settings-panel">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-base font-bold" style="color:var(--forest)">সেটিংস</h2>
+      <button id="settings-close" class="text-xl">✕</button>
+    </div>
+    <div id="settings-content"></div>
+  </aside>
+</div>
+
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>

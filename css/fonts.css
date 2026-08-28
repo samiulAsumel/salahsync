@@ -1,0 +1,14 @@
+/* Nikosh isn't distributed via any font CDN or apt package — this app tries, in order:
+   1) a Nikosh font already installed on the OS (local())
+   2) a file dropped into assets/fonts/ (see assets/fonts/README.md)
+   3) Hind Siliguri / Noto Sans Bengali from Google Fonts as a safe fallback
+   so Bangla text is never broken even when true Nikosh isn't available. */
+@font-face {
+  font-family: 'Nikosh';
+  src:
+    local('Nikosh'),
+    local('NikoshBAN'),
+    url('../assets/fonts/Nikosh.woff2') format('woff2'),
+    url('../assets/fonts/Nikosh.ttf') format('truetype');
+  font-display: swap;
+}
