@@ -4,15 +4,16 @@
 import { DEFAULT_SETTINGS } from '../data/defaults.js';
 
 const STORAGE_KEY = 'daily-routine-app:v1';
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 function migrate(raw) {
   if (!raw || typeof raw !== 'object') return freshState();
   if (raw.version === SCHEMA_VERSION) return raw;
   const merged = { ...freshState(), ...raw, version: SCHEMA_VERSION };
+  const loc = merged.settings.location;
   // v1 → v2: location switched from a flat lat/lon/tzOffsetMinutes to a
   // country/city preset (or custom) shape with an IANA `tz` string.
-  if (!merged.settings.location?.tz) {
+  if (!loc?.tz) {
     merged.settings.location = {
       ...structuredClone(DEFAULT_SETTINGS.location),
       name: raw.settings?.location?.name ?? DEFAULT_SETTINGS.location.name,
@@ -20,6 +21,11 @@ function migrate(raw) {
       lon: raw.settings?.location?.lon ?? DEFAULT_SETTINGS.location.lon,
       mode: 'custom',
     };
+  } else if (loc.mode === 'preset' && loc.country === 'BD' && !loc.upazila) {
+    // v2 → v3: Bangladesh dropped its flat city list for a বিভাগ→জেলা→উপজেলা
+    // hierarchy (data/bd-geo.js). No reliable city→upazila mapping, so fall
+    // back to the Mongla default rather than guessing.
+    merged.settings.location = structuredClone(DEFAULT_SETTINGS.location);
   }
   return merged;
 }

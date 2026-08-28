@@ -5,9 +5,11 @@ import { getSettings, updateSettings } from '../core/store.js';
 import { COUNTRIES, TIMEZONES } from '../data/locations.js';
 import { field, num, text } from './form-fields.js';
 import { toast } from './toast.js';
+import { bdLocationFields, handleBdLocationInput, firstBdLocation } from './bd-location.js';
 
 // Transient GPS-detect UI state — never persisted, only drives the settings panel render.
 const gpsState = { status: 'idle', error: null }; // status: idle | detecting | error
+const GPS_ACCURACY_WARN_METERS = 1000;
 
 export function detectGpsLocation(rerender) {
   if (!navigator.geolocation) {
@@ -31,9 +33,9 @@ export function detectGpsLocation(rerender) {
       rerender();
       // Desktop/laptop browsers have no GPS chip — they estimate from WiFi/IP,
       // which in Bangladesh often resolves to the ISP's Dhaka exit point rather
-      // than the actual city. >20km accuracy is a sign of that, not a bug here.
-      toast(accuracy > 20000
-        ? `অবস্থান পাওয়া গেছে, কিন্তু নির্ভুলতা কম (±${Math.round(accuracy / 1000)} কিমি) — ভুল হলে নিচে 'দেশ' থেকে আপনার শহর সরাসরি বেছে নিন`
+      // than the actual city. >1km accuracy is a sign of that, not a bug here.
+      toast(accuracy > GPS_ACCURACY_WARN_METERS
+        ? `অবস্থান পাওয়া গেছে, কিন্তু নির্ভুলতা কম (${formatAccuracy(accuracy)}) — ভুল হলে নিচে 'দেশ' থেকে আপনার শহর সরাসরি বেছে নিন`
         : 'GPS থেকে অবস্থান পাওয়া গেছে');
     },
     (err) => {
@@ -65,7 +67,9 @@ export function locationSection(s) {
     `<option value="custom" ${loc.mode === 'custom' ? 'selected' : ''}>অন্যান্য (কাস্টম)</option>`;
 
   let cityField = '';
-  if (loc.mode === 'preset') {
+  if (loc.mode === 'preset' && loc.country === 'BD') {
+    cityField = bdLocationFields(loc);
+  } else if (loc.mode === 'preset') {
     const country = COUNTRIES.find((c) => c.code === loc.country) ?? COUNTRIES[0];
     const cityOptions = country.cities.map((c) =>
       `<option value="${c.name}" ${loc.city === c.name ? 'selected' : ''}>${c.name}</option>`
@@ -80,8 +84,8 @@ export function locationSection(s) {
       ${field('টাইমজোন', `<select data-path="location.tz" data-type="string">${TIMEZONES.map((tz) => `<option value="${tz}" ${loc.tz === tz ? 'selected' : ''}>${tz}</option>`).join('')}</select>`)}
   ` : '';
 
-  const gpsAccuracyWarning = loc.mode === 'gps' && loc.accuracy > 20000
-    ? `<p class="note" style="color:var(--danger)">নির্ভুলতা মাত্র ${formatAccuracy(loc.accuracy)} — এটা IP/WiFi-ভিত্তিক আনুমানিক অবস্থান, ডেস্কটপ/ল্যাপটপে GPS চিপ না থাকায় প্রায়ই ISP-র শহর (যেমন ঢাকা) দেখায়। সঠিক না হলে নিচের 'দেশ' থেকে সরাসরি আপনার শহর বেছে নিন।</p>`
+  const gpsAccuracyWarning = loc.mode === 'gps' && loc.accuracy > GPS_ACCURACY_WARN_METERS
+    ? `<p class="note" style="color:var(--danger)">নির্ভুলতা মাত্র ${formatAccuracy(loc.accuracy)} — এটা IP/WiFi-ভিত্তিক আনুমানিক অবস্থান, ডেস্কটপ/ল্যাপটপে GPS চিপ না থাকায় প্রায়ই ISP-র শহর (যেমন ঢাকা) দেখায়। সঠিক না হলে নিচের 'দেশ' থেকে সরাসরি আপনার শহর/উপজেলা বেছে নিন।</p>`
     : '';
   const gpsNote = loc.mode === 'gps'
     ? (gpsState.status === 'error'
@@ -101,6 +105,8 @@ export function locationSection(s) {
 // Handles input events targeting the location controls. Returns true if handled
 // (caller should stop further processing of the event).
 export function handleLocationInput(e, rerender) {
+  if (handleBdLocationInput(e, rerender)) return true;
+
   if (e.target.id === 'loc-country') {
     const code = e.target.value;
     if (code === 'gps') {
@@ -110,6 +116,8 @@ export function handleLocationInput(e, rerender) {
     const s = structuredClone(getSettings());
     if (code === 'custom') {
       s.location = { ...s.location, mode: 'custom' };
+    } else if (code === 'BD') {
+      s.location = { mode: 'preset', country: 'BD', tz: 'Asia/Dhaka', ...firstBdLocation() };
     } else {
       const country = COUNTRIES.find((c) => c.code === code);
       const city = country.cities[0];

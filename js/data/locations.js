@@ -1,26 +1,9 @@
 // Curated country → city presets (lat/lon + IANA timezone). "অন্যান্য" (custom)
 // falls back to manual lat/lon entry + a plain timezone picker (TIMEZONES below).
 export const COUNTRIES = [
-  {
-    code: 'BD', name: 'বাংলাদেশ', tz: 'Asia/Dhaka',
-    cities: [
-      { name: 'মংলা', lat: 22.4892, lon: 89.6006 },
-      { name: 'ঢাকা', lat: 23.8103, lon: 90.4125 },
-      { name: 'চট্টগ্রাম', lat: 22.3569, lon: 91.7832 },
-      { name: 'খুলনা', lat: 22.8456, lon: 89.5403 },
-      { name: 'রাজশাহী', lat: 24.3745, lon: 88.6042 },
-      { name: 'সিলেট', lat: 24.8949, lon: 91.8687 },
-      { name: 'বরিশাল', lat: 22.7010, lon: 90.3535 },
-      { name: 'রংপুর', lat: 25.7439, lon: 89.2752 },
-      { name: 'ময়মনসিংহ', lat: 24.7471, lon: 90.4203 },
-      { name: 'কুমিল্লা', lat: 23.4607, lon: 91.1809 },
-      { name: 'নারায়ণগঞ্জ', lat: 23.6238, lon: 90.5000 },
-      { name: 'গাজীপুর', lat: 23.9999, lon: 90.4203 },
-      { name: 'কক্সবাজার', lat: 21.4272, lon: 92.0058 },
-      { name: 'যশোর', lat: 23.1667, lon: 89.2167 },
-      { name: 'বগুড়া', lat: 24.8465, lon: 89.3773 },
-    ],
-  },
+  // Bangladesh has no flat `cities` list — it uses the বিভাগ→জেলা→উপজেলা
+  // hierarchy from data/bd-geo.js instead (see ui/location-picker.js).
+  { code: 'BD', name: 'বাংলাদেশ', tz: 'Asia/Dhaka' },
   {
     code: 'SA', name: 'সৌদি আরব', tz: 'Asia/Riyadh',
     cities: [

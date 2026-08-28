@@ -3,9 +3,9 @@
 
 export const DEFAULT_SETTINGS = {
   location: {
-    mode: 'preset', // 'preset' = country+city below | 'custom' = manual name/lat/lon/tz
-    country: 'BD', city: 'মংলা',
-    name: 'মংলা, বাংলাদেশ', lat: 22.4892, lon: 89.6006, tz: 'Asia/Dhaka',
+    mode: 'preset', // 'preset' = country+city (or BD division/district/upazila) | 'custom' | 'gps'
+    country: 'BD', division: 'খুলনা', district: 'বাগেরহাট', upazila: 'মংলা',
+    name: 'মংলা, বাগেরহাট, বাংলাদেশ', lat: 22.4942, lon: 89.6016, tz: 'Asia/Dhaka',
   },
   calcMethod: 'MWL',
   asrMadhab: 'hanafi',
