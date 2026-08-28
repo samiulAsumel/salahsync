@@ -1,8 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <rect width="512" height="512" rx="96" fill="#10493B"/>
-  <circle cx="256" cy="220" r="118" fill="none" stroke="#E4D7B8" stroke-width="14"/>
-  <path d="M256 130 L256 220 L320 260" fill="none" stroke="#A9803A" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M170 400 Q256 330 342 400 L342 420 L170 420 Z" fill="#A9803A"/>
-  <circle cx="256" cy="330" r="18" fill="#A9803A"/>
-  <rect x="150" y="410" width="212" height="14" rx="7" fill="#E4D7B8"/>
+  <!-- sync ring: two arcs with arrowheads, standing for the app's schedule sync -->
+  <path d="M 100.95 199.57 A 165 165 0 0 1 411.05 199.57" fill="none" stroke="#A9803A" stroke-width="24" stroke-linecap="round"/>
+  <path d="M 411.05 312.43 A 165 165 0 0 1 100.95 312.43" fill="none" stroke="#A9803A" stroke-width="24" stroke-linecap="round"/>
+  <g transform="translate(411.05,199.57) rotate(70)"><polygon points="-5,-15 19,0 -5,15" fill="#A9803A"/></g>
+  <g transform="translate(100.95,312.43) rotate(250)"><polygon points="-5,-15 19,0 -5,15" fill="#A9803A"/></g>
+  <!-- crescent moon: classic Islamic motif, centered -->
+  <circle cx="246" cy="256" r="72" fill="#E4D7B8"/>
+  <circle cx="273" cy="231" r="60" fill="#10493B"/>
+  <circle cx="336" cy="192" r="11" fill="#E4D7B8"/>
 </svg>

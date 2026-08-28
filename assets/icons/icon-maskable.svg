@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#10493B"/>
+  <!-- sync ring: two arcs with arrowheads, standing for the app's schedule sync -->
+  <path d="M 100.95 199.57 A 165 165 0 0 1 411.05 199.57" fill="none" stroke="#A9803A" stroke-width="24" stroke-linecap="round"/>
+  <path d="M 411.05 312.43 A 165 165 0 0 1 100.95 312.43" fill="none" stroke="#A9803A" stroke-width="24" stroke-linecap="round"/>
+  <g transform="translate(411.05,199.57) rotate(70)"><polygon points="-5,-15 19,0 -5,15" fill="#A9803A"/></g>
+  <g transform="translate(100.95,312.43) rotate(250)"><polygon points="-5,-15 19,0 -5,15" fill="#A9803A"/></g>
+  <!-- crescent moon: classic Islamic motif, centered -->
+  <circle cx="246" cy="256" r="72" fill="#E4D7B8"/>
+  <circle cx="273" cy="231" r="60" fill="#10493B"/>
+  <circle cx="336" cy="192" r="11" fill="#E4D7B8"/>
+</svg>

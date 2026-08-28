@@ -1,6 +1,6 @@
 // Network-first app-shell service worker (see the fetch handler below) —
 // the cache exists purely for offline use, not to speed up/gate normal loads.
-const CACHE_NAME = 'daily-routine-v15';
+const CACHE_NAME = 'daily-routine-v16';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './css/app.css', './css/fonts.css',
@@ -14,7 +14,8 @@ const SHELL = [
   './js/ui/location-picker.js', './js/ui/bd-location.js', './js/ui/prayer-panel.js', './js/ui/time-picker.js',
   './js/ui/prayer-times-table.js',
   './js/ui/tracker.js', './js/ui/stats.js', './js/ui/clock.js', './js/ui/toast.js',
-  './assets/icons/icon-192.png', './assets/icons/icon-512.png',
+  './assets/icons/icon.svg', './assets/icons/icon-192.png', './assets/icons/icon-512.png',
+  './assets/icons/icon-maskable-512.png',
   './assets/fonts/Kalpurush.woff2', './assets/fonts/Kalpurush.ttf',
 ];
 
