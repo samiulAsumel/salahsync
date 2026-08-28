@@ -10,9 +10,13 @@ export function startClock({ onTick, clockEl, dateEl, hijriOffset = 0 }) {
     const now = new Date();
     const lang = getLang();
     if (clockEl) {
-      const h = String(now.getHours()).padStart(2, '0');
+      const period = now.getHours() < 12 ? 'AM' : 'PM';
+      let h = now.getHours() % 12;
+      if (h === 0) h = 12;
       const m = String(now.getMinutes()).padStart(2, '0');
-      clockEl.textContent = lang === 'en' ? `${h}:${m}` : toBanglaDigits(`${h}:${m}`);
+      const sec = String(now.getSeconds()).padStart(2, '0');
+      const clock = lang === 'en' ? `${h}:${m}:${sec}` : toBanglaDigits(`${h}:${m}:${sec}`);
+      clockEl.textContent = `${clock} ${period}`;
     }
     if (dateEl) {
       const hj = toHijri(now, hijriOffset, lang);
@@ -24,7 +28,7 @@ export function startClock({ onTick, clockEl, dateEl, hijriOffset = 0 }) {
     onTick?.(nowMinutes(now));
   };
   tick();
-  timer = setInterval(tick, 15000);
+  timer = setInterval(tick, 1000); // 1s so the clock's seconds actually tick
 }
 
 export function stopClock() {
