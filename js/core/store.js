@@ -4,7 +4,7 @@
 import { DEFAULT_SETTINGS } from '../data/defaults.js';
 
 const STORAGE_KEY = 'daily-routine-app:v1';
-export const SCHEMA_VERSION = 4;
+export const SCHEMA_VERSION = 5;
 
 const OLD_STATUS_TO_CODE = { জামাত: 'jamaat', একাকী: 'alone', কাযা: 'qaza', বাকি: 'pending' };
 
@@ -37,6 +37,19 @@ function migrate(raw) {
       if (OLD_STATUS_TO_CODE[v]) day.prayers[k] = OLD_STATUS_TO_CODE[v];
     }
   }
+  // v4 → v5: waqtManualOffset (offset-based) and the Fajr-only manual-jamaat
+  // special case were replaced by a per-waqt direct start/end/jamaat override
+  // (prayerManual) shared by all 5 waqts. An offset alone can't be converted to
+  // an absolute time, so it's dropped; the old Fajr override carries over.
+  if (!merged.settings.prayerManual) {
+    merged.settings.prayerManual = structuredClone(DEFAULT_SETTINGS.prayerManual);
+    if (raw.settings?.fajrMode === 'manual' && raw.settings?.manualFajrJamaat) {
+      merged.settings.prayerManual.fajr.jamaat = raw.settings.manualFajrJamaat;
+    }
+  }
+  delete merged.settings.waqtManualOffset;
+  delete merged.settings.fajrMode;
+  delete merged.settings.manualFajrJamaat;
   return merged;
 }
 

@@ -24,6 +24,7 @@ body { min-height: 100vh; }
 .waqt-label { display: block; font-size: .68rem; color: var(--muted); }
 .waqt-time { display: block; font-size: .78rem; font-weight: 700; color: var(--forest-deep); margin-top: .1rem; }
 :root[data-theme="dark"] .waqt-time { color: var(--forest); }
+.waqt-jamaat { display: block; font-size: .62rem; color: var(--gold); margin-top: .05rem; }
 @media (max-width: 640px) { #prayer-panel { grid-template-columns: repeat(3, 1fr); } }
 
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem; }
@@ -97,6 +98,13 @@ body { min-height: 100vh; }
 .grid-5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: .4rem; }
 .office-row { display: grid; grid-template-columns: 3.2rem 1fr 1fr; gap: .4rem; align-items: center; font-size: .75rem; margin-bottom: .4rem; }
 .office-row input { border: 1px solid var(--line); border-radius: .25rem; padding: .25rem; background: var(--paper); color: var(--ink); }
+
+.ptt { margin-bottom: .5rem; }
+.ptt-row { display: grid; grid-template-columns: 3.4rem repeat(3, 1fr); gap: .4rem; align-items: center; margin-bottom: .4rem; }
+.ptt-header span { font-size: .68rem; color: var(--muted); text-align: center; }
+.ptt-name { font-size: .78rem; font-weight: 600; color: var(--forest); }
+.ptt-manual .time-picker-btn { border-color: var(--gold); color: var(--forest-deep); background: var(--gold-soft); }
+:root[data-theme="dark"] .ptt-manual .time-picker-btn { color: var(--gold); }
 
 .time-picker-btn { font-size: .78rem; font-weight: 600; padding: .3rem .5rem; border: 1px solid var(--line); border-radius: .25rem; background: var(--paper); color: var(--ink); cursor: pointer; width: 100%; text-align: center; }
 .time-picker-btn:hover { border-color: var(--forest); color: var(--forest); }

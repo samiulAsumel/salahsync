@@ -39,9 +39,9 @@ export const STRINGS_EN = {
   settings: {
     sectionLocation: 'Location & Calculation Method', fieldCountry: 'Country', fieldCity: 'City',
     fieldCalcMethod: 'Calculation Method', fieldAsrMadhab: 'Asr Madhab', madhabHanafi: 'Hanafi', madhabShafi: 'Shafi',
-    sectionFajr: 'Fajr', fieldFajrMode: 'Mode', fajrModeAuto: 'Automatic (calculated)', fajrModeManual: 'Manual',
-    fieldManualFajr: 'Fajr Jamaah (if manual)',
-    sectionJamaatOffset: 'Jamaah Offset (minutes after adhan)', sectionWaqtOffset: 'Waqt Adjustment (minutes, from calculated time)',
+    sectionPrayerTimes: 'Prayer Times', colStart: 'Start', colEnd: 'End', colJamaat: 'Jamaah',
+    btnResetPrayerTimes: 'Reset all to automatic', toastPrayerTimesReset: 'Prayer times reset to automatic',
+    sectionJamaatOffset: 'Jamaah Offset (minutes after adhan, automatic-jamaah basis)',
     sectionOffice: 'Office (Sun–Thu)', sectionCommuteSleep: 'Commute & Sleep',
     fieldCommuteTo: 'Time to reach office (min)', fieldCommuteFrom: 'Time to return from office (min)',
     fieldBedtime: 'Bedtime', fieldTargetSleep: 'Target sleep (hours)', fieldHijriOffset: 'Hijri day adjustment',

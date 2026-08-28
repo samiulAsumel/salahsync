@@ -5,7 +5,12 @@ import { toBanglaDigits } from '../core/time.js';
 import { getLang } from '../core/i18n.js';
 
 let popover = null;
-let activeInput = null;
+// Track WHICH field is active by (container, path) instead of caching the actual
+// <input>/<button> nodes — a caller may re-render the container mid-interaction
+// (e.g. settings.js refreshing the "manual override" highlight after an edit),
+// which replaces those nodes; re-querying by path on every click stays correct.
+let activeContainer = null;
+let activePath = null;
 
 function formatDisplay(hhmm) {
   const [h24, m] = hhmm.split(':').map(Number);
@@ -24,6 +29,13 @@ export function timeField(path, value) {
   return `<button type="button" class="time-picker-btn" data-time-for="${path}">${formatDisplay(value)}</button><input type="hidden" data-path="${path}" data-type="string" value="${value}">`;
 }
 
+function currentInput() {
+  return activeContainer?.querySelector(`input[type="hidden"][data-path="${activePath}"]`) ?? null;
+}
+function currentButton() {
+  return activeContainer?.querySelector(`.time-picker-btn[data-time-for="${activePath}"]`) ?? null;
+}
+
 function updatePopoverDisplay(hhmm) {
   const [h24, m] = hhmm.split(':').map(Number);
   let h = h24 % 12;
@@ -36,7 +48,8 @@ function updatePopoverDisplay(hhmm) {
 
 function closePopover() {
   popover?.classList.add('hidden');
-  activeInput = null;
+  activeContainer = null;
+  activePath = null;
 }
 
 function ensurePopover() {
@@ -60,16 +73,20 @@ function ensurePopover() {
 
   popover.addEventListener('click', (e) => {
     const btn = e.target.closest('button[data-step]');
-    if (!btn || !activeInput) return;
-    let [h, m] = activeInput.value.split(':').map(Number);
+    const input = currentInput();
+    if (!btn || !input) return;
+    let [h, m] = input.value.split(':').map(Number);
     if (btn.dataset.step === 'hour') h = ((h + Number(btn.dataset.delta)) % 24 + 24) % 24;
     else if (btn.dataset.step === 'minute') m = ((m + Number(btn.dataset.delta)) % 60 + 60) % 60;
     else h = (h + 12) % 24;
     const hhmm = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-    activeInput.value = hhmm;
-    activeInput.dispatchEvent(new Event('input', { bubbles: true }));
+    input.value = hhmm;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
     updatePopoverDisplay(hhmm);
-    activeInput._btn.textContent = formatDisplay(hhmm);
+    // The oninput handler may have re-rendered the container (new button node) —
+    // re-resolve rather than reuse whatever `btn`'s sibling used to be.
+    const freshBtn = currentButton();
+    if (freshBtn) freshBtn.textContent = formatDisplay(hhmm);
   });
 
   document.addEventListener('click', (e) => {
@@ -91,8 +108,8 @@ export function wireTimePickers(container) {
     const path = btn.dataset.timeFor;
     const input = container.querySelector(`input[type="hidden"][data-path="${path}"]`);
     if (!input) return;
-    input._btn = btn;
-    activeInput = input;
+    activeContainer = container;
+    activePath = path;
     const pop = ensurePopover();
     updatePopoverDisplay(input.value);
     pop.classList.remove('hidden');

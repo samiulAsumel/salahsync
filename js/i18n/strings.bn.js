@@ -39,9 +39,9 @@ export const STRINGS_BN = {
   settings: {
     sectionLocation: 'অবস্থান ও হিসাব পদ্ধতি', fieldCountry: 'দেশ', fieldCity: 'শহর',
     fieldCalcMethod: 'হিসাব পদ্ধতি', fieldAsrMadhab: 'আসরের মাযহাব', madhabHanafi: 'হানাফি', madhabShafi: 'শাফেঈ',
-    sectionFajr: 'ফজর', fieldFajrMode: 'মোড', fajrModeAuto: 'স্বয়ংক্রিয় (হিসাব থেকে)', fajrModeManual: 'ম্যানুয়াল',
-    fieldManualFajr: 'ফজর জামাত (ম্যানুয়াল হলে)',
-    sectionJamaatOffset: 'জামাত অফসেট (আজান থেকে মিনিট)', sectionWaqtOffset: 'ওয়াক্ত সমন্বয় (মিনিট, হিসাবকৃত সময় থেকে)',
+    sectionPrayerTimes: 'নামাজের সময়', colStart: 'শুরু', colEnd: 'শেষ', colJamaat: 'জামাত',
+    btnResetPrayerTimes: 'সব স্বয়ংক্রিয় করুন', toastPrayerTimesReset: 'নামাজের সময় স্বয়ংক্রিয় করা হয়েছে',
+    sectionJamaatOffset: 'জামাত অফসেট (আজান থেকে মিনিট, স্বয়ংক্রিয় জামাতের ভিত্তি)',
     sectionOffice: 'অফিস (রবি–বৃহস্পতি)', sectionCommuteSleep: 'যাতায়াত ও ঘুম',
     fieldCommuteTo: 'অফিসে যেতে সময় (মিনিট)', fieldCommuteFrom: 'অফিস থেকে ফিরতে সময় (মিনিট)',
     fieldBedtime: 'ঘুমানোর সময়', fieldTargetSleep: 'লক্ষ্য ঘুম (ঘণ্টা)', fieldHijriOffset: 'হিজরি দিন সমন্বয়',

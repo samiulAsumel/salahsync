@@ -12,10 +12,17 @@ export const DEFAULT_SETTINGS = {
   },
   calcMethod: 'MWL',
   asrMadhab: 'hanafi',
-  fajrMode: 'auto', // 'auto' = solar calc | 'manual' = use manualFajrJamaat
-  manualFajrJamaat: '05:00',
-  jamaatOffset: { fajr: 25, dhuhr: 10, asr: 10, maghrib: 5, isha: 15 }, // minutes after adhan
-  waqtManualOffset: { fajr: 0, sunrise: 0, dhuhr: 0, asr: 0, maghrib: 0, isha: 0 },
+  jamaatOffset: { fajr: 25, dhuhr: 10, asr: 10, maghrib: 5, isha: 15 }, // minutes after adhan — auto-jamaat basis
+  // Per-waqt direct overrides (each field 'HH:MM' or null = use the calculated
+  // value) — lets a user pin an exact time from their mosque's own printed
+  // calendar instead of only nudging the solar calculation. See core/waqt-times.js.
+  prayerManual: {
+    fajr: { start: null, end: null, jamaat: null },
+    dhuhr: { start: null, end: null, jamaat: null },
+    asr: { start: null, end: null, jamaat: null },
+    maghrib: { start: null, end: null, jamaat: null },
+    isha: { start: null, end: null, jamaat: null },
+  },
 
   office: {
     perDay: {

@@ -3,6 +3,7 @@ import { CALC_METHODS } from '../core/prayer-times.js';
 import { field, num, setPath } from './form-fields.js';
 import { timeField, wireTimePickers } from './time-picker.js';
 import { locationSection, handleLocationInput, detectGpsLocation } from './location-picker.js';
+import { prayerTimesTable, WAQTS } from './prayer-times-table.js';
 import { t, getLang } from '../core/i18n.js';
 import { toast } from './toast.js';
 
@@ -20,15 +21,6 @@ function officeRows(s) {
     </div>`).join('');
 }
 
-const waqtGrid = (s) => `
-  <div class="grid-5">
-    ${field(t('prayer.fajr'), num('waqtManualOffset.fajr', s.waqtManualOffset.fajr))}
-    ${field(t('prayer.sunrise'), num('waqtManualOffset.sunrise', s.waqtManualOffset.sunrise))}
-    ${field(t('prayer.dhuhr'), num('waqtManualOffset.dhuhr', s.waqtManualOffset.dhuhr))}
-    ${field(t('prayer.asr'), num('waqtManualOffset.asr', s.waqtManualOffset.asr))}
-    ${field(t('prayer.maghrib'), num('waqtManualOffset.maghrib', s.waqtManualOffset.maghrib))}
-  </div>`;
-
 export function renderSettingsPanel(container) {
   const s = getSettings();
   container.innerHTML = `
@@ -38,12 +30,7 @@ export function renderSettingsPanel(container) {
       ${field(t('settings.fieldAsrMadhab'), `<select data-path="asrMadhab" data-type="string"><option value="hanafi" ${s.asrMadhab === 'hanafi' ? 'selected' : ''}>${t('settings.madhabHanafi')}</option><option value="shafi" ${s.asrMadhab === 'shafi' ? 'selected' : ''}>${t('settings.madhabShafi')}</option></select>`)}
     </section>
 
-    <section><h3>${t('settings.sectionFajr')}</h3>
-      ${field(t('settings.fieldFajrMode'), `<select data-path="fajrMode" data-type="string"><option value="auto" ${s.fajrMode === 'auto' ? 'selected' : ''}>${t('settings.fajrModeAuto')}</option><option value="manual" ${s.fajrMode === 'manual' ? 'selected' : ''}>${t('settings.fajrModeManual')}</option></select>`)}
-      ${field(t('settings.fieldManualFajr'), timeField('manualFajrJamaat', s.manualFajrJamaat))}
-    </section>
-
-    <section><h3>${t('settings.sectionWaqtOffset')}</h3>${waqtGrid(s)}</section>
+    <section><h3>${t('settings.sectionPrayerTimes')}</h3>${prayerTimesTable(s)}</section>
 
     <section><h3>${t('settings.sectionJamaatOffset')}</h3>
       <div class="grid-5">
@@ -99,9 +86,22 @@ export function wireSettingsPanel(container, onChange) {
     const raw = e.target.value;
     setPath(s, path, e.target.dataset.type === 'number' ? Number(raw) : raw);
     updateSettings(s);
-    onChange?.();
+    // Time-picker fields are hidden <input>s paired with a button (see
+    // time-picker.js) — a full re-render is safe for them (no typing focus to
+    // lose) and needed so e.g. the prayer-times table's "manual override"
+    // gold highlight updates immediately instead of only on next panel open.
+    if (e.target.type === 'hidden') rerender();
+    else onChange?.();
   };
   wireTimePickers(container);
+
+  container.querySelector('#btn-reset-prayer-times')?.addEventListener('click', () => {
+    const s = structuredClone(getSettings());
+    s.prayerManual = Object.fromEntries(WAQTS.map((k) => [k, { start: null, end: null, jamaat: null }]));
+    updateSettings(s);
+    rerender();
+    toast(t('settings.toastPrayerTimesReset'));
+  });
 
   container.querySelector('#btn-gps-refresh')?.addEventListener('click', () => detectGpsLocation(rerender));
 

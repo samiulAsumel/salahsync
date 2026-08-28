@@ -10,33 +10,11 @@
 //   { flex:true, min }                         fills the gap up to the NEXT block's start
 
 import { hhmmToMinutes } from './time.js';
-import { computePrayerTimes } from './prayer-times.js';
-import { getTzOffsetMinutes } from './timezone.js';
+import { computeWaqtTimes } from './waqt-times.js';
 import { t, tBlock } from './i18n.js';
 
 function resolveAnchors(settings, weekday) {
-  const today = new Date();
-  const raw = computePrayerTimes({
-    date: today,
-    lat: settings.location.lat,
-    lon: settings.location.lon,
-    tzOffsetMinutes: getTzOffsetMinutes(settings.location.tz, today),
-    method: settings.calcMethod,
-    asrMadhab: settings.asrMadhab,
-  });
-  const off = settings.waqtManualOffset;
-  const adhan = {
-    fajr: raw.fajr + off.fajr,
-    sunrise: raw.sunrise + off.sunrise,
-    dhuhr: raw.dhuhr + off.dhuhr,
-    asr: raw.asr + off.asr,
-    maghrib: raw.maghrib + off.maghrib,
-    isha: raw.isha + off.isha,
-  };
-  const jo = settings.jamaatOffset;
-  const fajrJamaat = settings.fajrMode === 'manual'
-    ? hhmmToMinutes(settings.manualFajrJamaat)
-    : adhan.fajr + jo.fajr;
+  const w = computeWaqtTimes(settings);
 
   const dayCfg = settings.office.perDay[weekday];
   const officeStart = dayCfg ? hhmmToMinutes(dayCfg.start) : null;
@@ -46,14 +24,10 @@ function resolveAnchors(settings, weekday) {
   if (bedtime < 12 * 60) bedtime += 1440; // past-midnight bedtime, e.g. 00:30
 
   return {
-    ...adhan,
-    fajrJamaat,
-    dhuhrJamaat: adhan.dhuhr + jo.dhuhr,
-    asrJamaat: adhan.asr + jo.asr,
-    maghribJamaat: adhan.maghrib + jo.maghrib,
-    ishaJamaat: adhan.isha + jo.isha,
-    jummaGo: adhan.dhuhr + jo.dhuhr - settings.durations.jamaatWalk,
-    wakeUp: fajrJamaat - settings.durations.tahajjud - settings.durations.sunnahTilawat,
+    fajr: w.fajr.start, sunrise: w.sunrise, dhuhr: w.dhuhr.start, asr: w.asr.start, maghrib: w.maghrib.start, isha: w.isha.start,
+    fajrJamaat: w.fajr.jamaat, dhuhrJamaat: w.dhuhr.jamaat, asrJamaat: w.asr.jamaat, maghribJamaat: w.maghrib.jamaat, ishaJamaat: w.isha.jamaat,
+    jummaGo: w.dhuhr.jamaat - settings.durations.jamaatWalk,
+    wakeUp: w.fajr.jamaat - settings.durations.tahajjud - settings.durations.sunnahTilawat,
     officeStart, officeEnd,
     leaveHome: officeStart != null ? officeStart - settings.commute.toOffice : null,
     arriveHome: officeEnd != null ? officeEnd + settings.commute.fromOffice : null,
