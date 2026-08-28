@@ -1,6 +1,6 @@
 // Cache-first app-shell service worker. Bump CACHE_NAME on every deploy so
 // clients pick up the new files instead of serving a stale cached shell.
-const CACHE_NAME = 'daily-routine-v3';
+const CACHE_NAME = 'daily-routine-v4';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './css/app.css', './css/fonts.css',

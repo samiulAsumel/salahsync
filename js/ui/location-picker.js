@@ -22,14 +22,19 @@ export function detectGpsLocation(rerender) {
 
   navigator.geolocation.getCurrentPosition(
     (pos) => {
-      const { latitude: lat, longitude: lon } = pos.coords;
+      const { latitude: lat, longitude: lon, accuracy } = pos.coords;
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Dhaka';
       const s = structuredClone(getSettings());
-      s.location = { mode: 'gps', name: `বর্তমান অবস্থান (${lat.toFixed(3)}, ${lon.toFixed(3)})`, lat, lon, tz };
+      s.location = { mode: 'gps', name: `বর্তমান অবস্থান (${lat.toFixed(3)}, ${lon.toFixed(3)})`, lat, lon, tz, accuracy };
       updateSettings(s);
       gpsState.status = 'idle';
       rerender();
-      toast('GPS থেকে অবস্থান পাওয়া গেছে');
+      // Desktop/laptop browsers have no GPS chip — they estimate from WiFi/IP,
+      // which in Bangladesh often resolves to the ISP's Dhaka exit point rather
+      // than the actual city. >20km accuracy is a sign of that, not a bug here.
+      toast(accuracy > 20000
+        ? `অবস্থান পাওয়া গেছে, কিন্তু নির্ভুলতা কম (±${Math.round(accuracy / 1000)} কিমি) — ভুল হলে নিচে 'দেশ' থেকে আপনার শহর সরাসরি বেছে নিন`
+        : 'GPS থেকে অবস্থান পাওয়া গেছে');
     },
     (err) => {
       gpsState.status = 'error';
@@ -40,8 +45,13 @@ export function detectGpsLocation(rerender) {
       }[err.code] ?? 'অজানা ত্রুটি';
       rerender();
     },
-    { enableHighAccuracy: true, timeout: 12000, maximumAge: 300000 }
+    { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
   );
+}
+
+function formatAccuracy(meters) {
+  if (meters == null) return '';
+  return meters > 1500 ? `±${(meters / 1000).toFixed(1)} কিমি` : `±${Math.round(meters)} মি`;
 }
 
 export function locationSection(s) {
@@ -70,10 +80,14 @@ export function locationSection(s) {
       ${field('টাইমজোন', `<select data-path="location.tz" data-type="string">${TIMEZONES.map((tz) => `<option value="${tz}" ${loc.tz === tz ? 'selected' : ''}>${tz}</option>`).join('')}</select>`)}
   ` : '';
 
+  const gpsAccuracyWarning = loc.mode === 'gps' && loc.accuracy > 20000
+    ? `<p class="note" style="color:var(--danger)">নির্ভুলতা মাত্র ${formatAccuracy(loc.accuracy)} — এটা IP/WiFi-ভিত্তিক আনুমানিক অবস্থান, ডেস্কটপ/ল্যাপটপে GPS চিপ না থাকায় প্রায়ই ISP-র শহর (যেমন ঢাকা) দেখায়। সঠিক না হলে নিচের 'দেশ' থেকে সরাসরি আপনার শহর বেছে নিন।</p>`
+    : '';
   const gpsNote = loc.mode === 'gps'
     ? (gpsState.status === 'error'
         ? `<p class="note" style="color:var(--danger)">${gpsState.error}</p>`
-        : `<p class="note">${loc.name} · ${loc.lat.toFixed(3)}, ${loc.lon.toFixed(3)} · ${loc.tz}</p>`) +
+        : `<p class="note">${loc.name} · ${loc.lat.toFixed(3)}, ${loc.lon.toFixed(3)} · ${loc.tz}${loc.accuracy ? ` · নির্ভুলতা ${formatAccuracy(loc.accuracy)}` : ''}</p>`) +
+      gpsAccuracyWarning +
       `<button type="button" id="btn-gps-refresh" class="btn-file">🔄 আবার সনাক্ত করুন</button>`
     : '';
 
