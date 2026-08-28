@@ -12,6 +12,11 @@
 * { box-sizing: border-box; }
 html, body { background: var(--bg); font-family: 'Kalpurush', 'Nikosh', 'Noto Sans Bengali', 'Hind Siliguri', sans-serif; color: var(--ink); }
 body { min-height: 100vh; }
+#app-title { font-family: 'Tiro Bangla', serif; }
+
+/* English mode: Times New Roman throughout instead of the Bangla font stack. */
+html[lang="en"], html[lang="en"] body { font-family: 'Times New Roman', Times, Georgia, serif; }
+html[lang="en"] #app-title { font-family: 'Times New Roman', Times, Georgia, serif; }
 
 .card { background: var(--paper); border-radius: .5rem; box-shadow: 0 8px 30px rgba(11,52,42,.12); }
 .eyebrow { font-size: .75rem; letter-spacing: .12em; color: var(--gold); font-weight: 600; text-transform: uppercase; }
