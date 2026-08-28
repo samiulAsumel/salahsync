@@ -1,12 +1,12 @@
 // Bangla UI strings. Keys mirror strings.en.js exactly — see core/i18n.js for t().
 export const STRINGS_BN = {
-  app: { eyebrow: 'মুসলিম ডেইলি লাইফ ট্র্যাকার', title: 'দৈনিক রুটিন' },
+  app: { eyebrow: 'মুসলিম ডেইলি লাইফ ট্র্যাকার', title: 'SalahSync' },
   tabs: { workday: 'কর্মদিবস', friday: 'জুম্মাবার', saturday: 'শনিবার' },
   profile: {
     workday: { sub: 'রবি – বৃহস্পতি' }, friday: { sub: 'সাপ্তাহিক ছুটি' }, saturday: { sub: 'সাপ্তাহিক ছুটি' },
   },
   section: { habits: 'আজকের আমল ট্র্যাকার', progress: 'অগ্রগতি', prayerTimes: 'আজকের নামাজের সময়' },
-  footer: { appName: 'দৈনিক রুটিন অ্যাপ' },
+  footer: { appName: 'SalahSync' },
   settingsTitle: 'সেটিংস',
   tooltip: { theme: 'থিম পরিবর্তন', install: 'অ্যাপ ইনস্টল করুন', print: 'প্রিন্ট করুন', settings: 'সেটিংস', lang: 'ভাষা' },
 

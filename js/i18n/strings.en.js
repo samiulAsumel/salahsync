@@ -1,12 +1,12 @@
 // English UI strings. Keys mirror strings.bn.js exactly — see core/i18n.js for t().
 export const STRINGS_EN = {
-  app: { eyebrow: 'Muslim Daily Life Tracker', title: 'Daily Routine' },
+  app: { eyebrow: 'Muslim Daily Life Tracker', title: 'SalahSync' },
   tabs: { workday: 'Workday', friday: 'Friday', saturday: 'Saturday' },
   profile: {
     workday: { sub: 'Sun – Thu' }, friday: { sub: 'Weekly Off' }, saturday: { sub: 'Weekly Off' },
   },
   section: { habits: "Today's Amal Tracker", progress: 'Progress', prayerTimes: "Today's Prayer Times" },
-  footer: { appName: 'Daily Routine App' },
+  footer: { appName: 'SalahSync' },
   settingsTitle: 'Settings',
   tooltip: { theme: 'Toggle theme', install: 'Install app', print: 'Print', settings: 'Settings', lang: 'Language' },
 
