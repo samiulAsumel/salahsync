@@ -2,73 +2,79 @@ import { getSettings, updateSettings, resetSettings, exportJSON, importJSON } fr
 import { CALC_METHODS } from '../core/prayer-times.js';
 import { field, num, time, setPath } from './form-fields.js';
 import { locationSection, handleLocationInput, detectGpsLocation } from './location-picker.js';
+import { t, getLang } from '../core/i18n.js';
 import { toast } from './toast.js';
 
-const WD_LABELS = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহস্পতি'];
-const DURATION_LABELS = {
-  tahajjud: 'তাহাজ্জুদ', sunnahTilawat: 'ফজরের সুন্নত+তিলাওয়াত', mosqueReturn: 'মসজিদ থেকে ফেরা',
-  jamaatWalk: 'মসজিদে যাওয়ার সময়', fajrJamaatDuration: 'ফজর জামাতের দৈর্ঘ্য', jamaatPrayer: 'ওয়াক্ত নামাজের দৈর্ঘ্য',
-  breakfast: 'নাস্তা', ishaMeal: 'এশা + খাবার', codingPractice: 'সন্ধ্যার কোডিং প্র্যাকটিস', reading: 'বই পড়া',
-  windDown: 'ঘুমের প্রস্তুতি (সর্বনিম্ন)', minMorningCoding: 'সকালের কোডিং (সর্বনিম্ন)', minWeekendCoding: 'ছুটির কোডিং (সর্বনিম্ন)',
-  weekendEarlyCoding: 'ছুটির সকালের কোডিং', jummaPrep: 'জুম্মার প্রস্তুতি', jummaDuration: 'জুম্মার নামাজ+খুতবা',
-  lunchRest: 'দুপুরের খাবার+বিশ্রাম', eveningLightCoding: 'সন্ধ্যার হালকা কাজ', afternoonReading: 'বিকেলের পড়া',
-  weekReview: 'সপ্তাহের রিভিউ', officeBreakDhuhr: 'যোহরের অফিস-বিরতি', officeBreakAsr: 'আসরের অফিস-বিরতি', officeBreakMaghrib: 'মাগরিবের অফিস-বিরতি',
-};
+const WD_SHORT_BN = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহস্পতি'];
+const WD_SHORT_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
 
 function officeRows(s) {
+  const lang = getLang();
+  const names = lang === 'en' ? WD_SHORT_EN : WD_SHORT_BN.map((n) => n + 'বার');
   return [0, 1, 2, 3, 4].map((d) => `
     <div class="office-row">
-      <span>${WD_LABELS[d]}বার</span>
+      <span>${names[d]}</span>
       ${time(`office.perDay.${d}.start`, s.office.perDay[d].start)}
       ${time(`office.perDay.${d}.end`, s.office.perDay[d].end)}
     </div>`).join('');
 }
 
+const waqtGrid = (s) => `
+  <div class="grid-5">
+    ${field(t('prayer.fajr'), num('waqtManualOffset.fajr', s.waqtManualOffset.fajr))}
+    ${field(t('prayer.sunrise'), num('waqtManualOffset.sunrise', s.waqtManualOffset.sunrise))}
+    ${field(t('prayer.dhuhr'), num('waqtManualOffset.dhuhr', s.waqtManualOffset.dhuhr))}
+    ${field(t('prayer.asr'), num('waqtManualOffset.asr', s.waqtManualOffset.asr))}
+    ${field(t('prayer.maghrib'), num('waqtManualOffset.maghrib', s.waqtManualOffset.maghrib))}
+  </div>`;
+
 export function renderSettingsPanel(container) {
   const s = getSettings();
   container.innerHTML = `
-    <section><h3>অবস্থান ও হিসাব পদ্ধতি</h3>
+    <section><h3>${t('settings.sectionLocation')}</h3>
       ${locationSection(s)}
-      ${field('হিসাব পদ্ধতি', `<select data-path="calcMethod" data-type="string">${Object.entries(CALC_METHODS).map(([k, v]) => `<option value="${k}" ${s.calcMethod === k ? 'selected' : ''}>${v.name}</option>`).join('')}</select>`)}
-      ${field('আসরের মাযহাব', `<select data-path="asrMadhab" data-type="string"><option value="hanafi" ${s.asrMadhab === 'hanafi' ? 'selected' : ''}>হানাফি</option><option value="shafi" ${s.asrMadhab === 'shafi' ? 'selected' : ''}>শাফেঈ</option></select>`)}
+      ${field(t('settings.fieldCalcMethod'), `<select data-path="calcMethod" data-type="string">${Object.keys(CALC_METHODS).map((k) => `<option value="${k}" ${s.calcMethod === k ? 'selected' : ''}>${t('calcMethod.' + k)}</option>`).join('')}</select>`)}
+      ${field(t('settings.fieldAsrMadhab'), `<select data-path="asrMadhab" data-type="string"><option value="hanafi" ${s.asrMadhab === 'hanafi' ? 'selected' : ''}>${t('settings.madhabHanafi')}</option><option value="shafi" ${s.asrMadhab === 'shafi' ? 'selected' : ''}>${t('settings.madhabShafi')}</option></select>`)}
     </section>
 
-    <section><h3>ফজর</h3>
-      ${field('মোড', `<select data-path="fajrMode" data-type="string"><option value="auto" ${s.fajrMode === 'auto' ? 'selected' : ''}>স্বয়ংক্রিয় (হিসাব থেকে)</option><option value="manual" ${s.fajrMode === 'manual' ? 'selected' : ''}>ম্যানুয়াল</option></select>`)}
-      ${field('ফজর জামাত (ম্যানুয়াল হলে)', time('manualFajrJamaat', s.manualFajrJamaat))}
+    <section><h3>${t('settings.sectionFajr')}</h3>
+      ${field(t('settings.fieldFajrMode'), `<select data-path="fajrMode" data-type="string"><option value="auto" ${s.fajrMode === 'auto' ? 'selected' : ''}>${t('settings.fajrModeAuto')}</option><option value="manual" ${s.fajrMode === 'manual' ? 'selected' : ''}>${t('settings.fajrModeManual')}</option></select>`)}
+      ${field(t('settings.fieldManualFajr'), time('manualFajrJamaat', s.manualFajrJamaat))}
     </section>
 
-    <section><h3>জামাত অফসেট (আজান থেকে মিনিট)</h3>
+    <section><h3>${t('settings.sectionWaqtOffset')}</h3>${waqtGrid(s)}</section>
+
+    <section><h3>${t('settings.sectionJamaatOffset')}</h3>
       <div class="grid-5">
-        ${field('ফজর', num('jamaatOffset.fajr', s.jamaatOffset.fajr))}
-        ${field('যোহর', num('jamaatOffset.dhuhr', s.jamaatOffset.dhuhr))}
-        ${field('আসর', num('jamaatOffset.asr', s.jamaatOffset.asr))}
-        ${field('মাগরিব', num('jamaatOffset.maghrib', s.jamaatOffset.maghrib))}
-        ${field('এশা', num('jamaatOffset.isha', s.jamaatOffset.isha))}
+        ${field(t('prayer.fajr'), num('jamaatOffset.fajr', s.jamaatOffset.fajr))}
+        ${field(t('prayer.dhuhr'), num('jamaatOffset.dhuhr', s.jamaatOffset.dhuhr))}
+        ${field(t('prayer.asr'), num('jamaatOffset.asr', s.jamaatOffset.asr))}
+        ${field(t('prayer.maghrib'), num('jamaatOffset.maghrib', s.jamaatOffset.maghrib))}
+        ${field(t('prayer.isha'), num('jamaatOffset.isha', s.jamaatOffset.isha))}
       </div>
     </section>
 
-    <section><h3>অফিস (রবি–বৃহস্পতি)</h3>${officeRows(s)}</section>
+    <section><h3>${t('settings.sectionOffice')}</h3>${officeRows(s)}</section>
 
-    <section><h3>যাতায়াত ও ঘুম</h3>
-      ${field('অফিসে যেতে সময় (মিনিট)', num('commute.toOffice', s.commute.toOffice))}
-      ${field('অফিস থেকে ফিরতে সময় (মিনিট)', num('commute.fromOffice', s.commute.fromOffice))}
-      ${field('ঘুমানোর সময়', time('sleep.bedtime', s.sleep.bedtime))}
-      ${field('লক্ষ্য ঘুম (ঘণ্টা)', num('sleep.targetHours', s.sleep.targetHours, 0.5))}
-      ${field('হিজরি দিন সমন্বয়', num('hijriDayOffset', s.hijriDayOffset))}
+    <section><h3>${t('settings.sectionCommuteSleep')}</h3>
+      ${field(t('settings.fieldCommuteTo'), num('commute.toOffice', s.commute.toOffice))}
+      ${field(t('settings.fieldCommuteFrom'), num('commute.fromOffice', s.commute.fromOffice))}
+      ${field(t('settings.fieldBedtime'), time('sleep.bedtime', s.sleep.bedtime))}
+      ${field(t('settings.fieldTargetSleep'), num('sleep.targetHours', s.sleep.targetHours, 0.5))}
+      ${field(t('settings.fieldHijriOffset'), num('hijriDayOffset', s.hijriDayOffset))}
     </section>
 
-    <section><h3>সময়কাল (মিনিট)</h3>
+    <section><h3>${t('settings.sectionDurations')}</h3>
       <div class="grid-2">
-        ${Object.entries(s.durations).map(([k, v]) => field(DURATION_LABELS[k] ?? k, num(`durations.${k}`, v))).join('')}
+        ${Object.entries(s.durations).map(([k, v]) => field(t('duration.' + k), num(`durations.${k}`, v))).join('')}
       </div>
     </section>
 
-    <section><h3>ডেটা</h3>
+    <section><h3>${t('settings.sectionData')}</h3>
       <div class="data-actions">
-        <button type="button" id="btn-export">এক্সপোর্ট (JSON)</button>
-        <label class="btn-file">ইম্পোর্ট<input type="file" id="btn-import" accept="application/json" class="hidden"></label>
-        <button type="button" id="btn-reset">রিসেট</button>
+        <button type="button" id="btn-export">${t('settings.btnExport')}</button>
+        <label class="btn-file">${t('settings.btnImport')}<input type="file" id="btn-import" accept="application/json" class="hidden"></label>
+        <button type="button" id="btn-reset">${t('settings.btnReset')}</button>
       </div>
     </section>
   `;
@@ -112,19 +118,19 @@ export function wireSettingsPanel(container, onChange) {
     if (!f) return;
     try {
       importJSON(await f.text());
-      toast('ব্যাকআপ থেকে ডেটা লোড হয়েছে');
+      toast(t('settings.toastImported'));
       rerender();
     } catch {
-      toast('ফাইলটি সঠিক নয়', { type: 'error' });
+      toast(t('settings.toastImportError'), { type: 'error' });
     } finally {
       fileInput.value = '';
     }
   });
 
   container.querySelector('#btn-reset')?.addEventListener('click', () => {
-    if (!confirm('সব সেটিংস ডিফল্টে ফিরিয়ে দিতে চান?')) return;
+    if (!confirm(t('settings.confirmReset'))) return;
     resetSettings();
     rerender();
-    toast('সেটিংস রিসেট হয়েছে');
+    toast(t('settings.toastReset'));
   });
 }

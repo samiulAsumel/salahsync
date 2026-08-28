@@ -1,27 +1,32 @@
 import { HABITS } from '../data/defaults.js';
 import { toBanglaDigits } from '../core/time.js';
+import { t, getLang } from '../core/i18n.js';
 import { setHabitValue } from '../core/store.js';
 
+const digits = (n) => (getLang() === 'en' ? n : toBanglaDigits(n));
+
 function habitRow(habit, value) {
+  const label = t('habit.' + habit.id);
   if (habit.type === 'checkbox') {
     const checked = !!value;
     return `
     <label class="habit-row">
       <input type="checkbox" data-habit="${habit.id}" ${checked ? 'checked' : ''}>
-      <span>${habit.label}</span>
+      <span>${label}</span>
     </label>`;
   }
   const v = value || 0;
+  const unit = habit.unitKey ? t('unit.' + habit.unitKey) : '';
   const pct = habit.target ? Math.min(100, Math.round((v / habit.target) * 100)) : 0;
   return `
   <div class="habit-row habit-count">
-    <span class="habit-name">${habit.label}${habit.unit ? ` <em>(${habit.unit})</em>` : ''}</span>
+    <span class="habit-name">${label}${unit ? ` <em>(${unit})</em>` : ''}</span>
     <div class="habit-controls">
       <button type="button" data-habit-step="${habit.id}" data-delta="-1">−</button>
       <input type="number" min="0" data-habit="${habit.id}" value="${v}">
       <button type="button" data-habit-step="${habit.id}" data-delta="1">+</button>
     </div>
-    ${habit.target ? `<div class="habit-bar"><div class="habit-bar-fill" style="width:${pct}%"></div></div><span class="habit-target">${toBanglaDigits(v)}/${toBanglaDigits(habit.target)}</span>` : ''}
+    ${habit.target ? `<div class="habit-bar"><div class="habit-bar-fill" style="width:${pct}%"></div></div><span class="habit-target">${digits(v)}/${digits(habit.target)}</span>` : ''}
   </div>`;
 }
 

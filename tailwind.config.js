@@ -15,7 +15,7 @@ module.exports = {
         navy: '#1e3a5f',
       },
       fontFamily: {
-        bangla: ['Nikosh', 'Hind Siliguri', 'Noto Sans Bengali', 'sans-serif'],
+        bangla: ['Kalpurush', 'Nikosh', 'Noto Sans Bengali', 'Hind Siliguri', 'sans-serif'],
       },
     },
   },

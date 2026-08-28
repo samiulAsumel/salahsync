@@ -12,6 +12,7 @@
 import { hhmmToMinutes } from './time.js';
 import { computePrayerTimes } from './prayer-times.js';
 import { getTzOffsetMinutes } from './timezone.js';
+import { t, tBlock } from './i18n.js';
 
 function resolveAnchors(settings, weekday) {
   const today = new Date();
@@ -70,23 +71,25 @@ function durationOf(spec, durations) {
  * @param {Array} template block specs for one profile (workday/friday/saturday)
  * @param {Object} settings full settings object
  * @param {number} weekday 0=Sun..6=Sat
+ * @param {string} profileKey 'workday'|'friday'|'saturday' — for localized warning text
  * @returns {{blocks:Array, warnings:Array<string>, anchors:Object}}
  */
-export function resolveSchedule(template, settings, weekday) {
+export function resolveSchedule(template, settings, weekday, profileKey) {
   const anchors = resolveAnchors(settings, weekday);
   const durations = settings.durations;
   const blocks = [];
   const warnings = [];
   const byId = new Map();
   let pendingFlex = null;
+  const labelOf = (spec) => tBlock(profileKey, spec.id, 'label') ?? spec.id;
 
   const closeFlex = (startOfNext) => {
     if (!pendingFlex) return;
     const actual = startOfNext - pendingFlex.start;
     if (actual < 0) {
-      warnings.push(`"${pendingFlex.label}" ব্লকে সময় ঋণাত্মক — আগের ধাপগুলো পুনরায় দেখুন।`);
+      warnings.push(t('warnings.flexNegative', { label: labelOf(pendingFlex) }));
     } else if (pendingFlex.min && actual < pendingFlex.min) {
-      warnings.push(`"${pendingFlex.label}" মাত্র ${actual} মিনিট পাচ্ছে (কমপক্ষে ${pendingFlex.min} মিনিট দরকার) — সময় সমন্বয় করুন।`);
+      warnings.push(t('warnings.flexShort', { label: labelOf(pendingFlex), actual, min: pendingFlex.min }));
     }
     pendingFlex.end = startOfNext;
     pendingFlex.durationActual = Math.max(0, actual);
@@ -126,7 +129,7 @@ export function resolveSchedule(template, settings, weekday) {
     else end = startMin + durationOf(spec, durations);
 
     if (end < startMin) {
-      warnings.push(`"${spec.label}" সময়সীমা বৈপরীত্যপূর্ণ (অফিস/নামাজের সময় সেটিংস মিলিয়ে দেখুন) — ব্লকটি বাদ দেওয়া হয়েছে।`);
+      warnings.push(t('warnings.blockConflict', { label: labelOf(spec) }));
       continue;
     }
     if (end === startMin && spec.duration !== 0) continue; // degenerate zero-width segment; explicit duration:0 markers (wake, sleep, ...) are kept
@@ -144,7 +147,7 @@ export function resolveSchedule(template, settings, weekday) {
   if (sleepBlock && wakeAnchorBlock) {
     sleepMinutes = 1440 - (sleepBlock.start - wakeAnchorBlock.start);
     if (sleepMinutes < settings.sleep.targetHours * 60) {
-      warnings.push(`লক্ষ্যমাত্রার (${settings.sleep.targetHours} ঘণ্টা) চেয়ে ঘুম কম হচ্ছে — প্রায় ${Math.round(sleepMinutes / 60 * 10) / 10} ঘণ্টা।`);
+      warnings.push(t('warnings.sleepShort', { target: settings.sleep.targetHours, actual: Math.round(sleepMinutes / 60 * 10) / 10 }));
     }
   }
 

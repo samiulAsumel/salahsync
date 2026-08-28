@@ -5,6 +5,10 @@ const HIJRI_MONTHS_BN = [
   'মুহররম', 'সফর', 'রবিউল আউয়াল', 'রবিউস সানি', 'জমাদিউল আউয়াল', 'জমাদিউস সানি',
   'রজব', 'শাবান', 'রমজান', 'শাওয়াল', 'জিলক্বদ', 'জিলহজ্জ',
 ];
+const HIJRI_MONTHS_EN = [
+  'Muharram', 'Safar', "Rabi' al-Awwal", "Rabi' al-Thani", 'Jumada al-Awwal', 'Jumada al-Thani',
+  'Rajab', "Sha'ban", 'Ramadan', 'Shawwal', "Dhu al-Qi'dah", 'Dhu al-Hijjah',
+];
 
 function gregorianToJdn(y, m, d) {
   const a = Math.floor((14 - m) / 12);
@@ -28,9 +32,10 @@ function jdnToHijri(jdn) {
   return { year, month, day };
 }
 
-export function toHijri(date = new Date(), dayOffset = 0) {
+export function toHijri(date = new Date(), dayOffset = 0, lang = 'bn') {
   const jdn = gregorianToJdn(date.getFullYear(), date.getMonth() + 1, date.getDate()) + dayOffset;
   const h = jdnToHijri(jdn);
-  return { year: h.year, month: h.month, day: h.day, monthName: HIJRI_MONTHS_BN[h.month - 1] };
+  const months = lang === 'en' ? HIJRI_MONTHS_EN : HIJRI_MONTHS_BN;
+  return { year: h.year, month: h.month, day: h.day, monthName: months[h.month - 1] };
 }
 

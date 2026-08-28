@@ -4,7 +4,9 @@
 import { DEFAULT_SETTINGS } from '../data/defaults.js';
 
 const STORAGE_KEY = 'daily-routine-app:v1';
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
+
+const OLD_STATUS_TO_CODE = { জামাত: 'jamaat', একাকী: 'alone', কাযা: 'qaza', বাকি: 'pending' };
 
 function migrate(raw) {
   if (!raw || typeof raw !== 'object') return freshState();
@@ -27,6 +29,14 @@ function migrate(raw) {
     // back to the Mongla default rather than guessing.
     merged.settings.location = structuredClone(DEFAULT_SETTINGS.location);
   }
+  if (merged.settings.language === undefined) merged.settings.language = 'bn';
+  // v3 → v4: prayer status values switched from Bangla display text (which broke
+  // once English mode existed) to stable codes; translate any old logs in place.
+  for (const day of Object.values(merged.logs)) {
+    for (const [k, v] of Object.entries(day.prayers ?? {})) {
+      if (OLD_STATUS_TO_CODE[v]) day.prayers[k] = OLD_STATUS_TO_CODE[v];
+    }
+  }
   return merged;
 }
 
@@ -34,7 +44,7 @@ function freshState() {
   return {
     version: SCHEMA_VERSION,
     settings: structuredClone(DEFAULT_SETTINGS),
-    logs: {}, // dateKey -> { prayers: {fajr:'jamaat'|'alone'|'qaza'|'none', ...}, habits: {id:number|boolean}, note:string }
+    logs: {}, // dateKey -> { prayers: {fajr:'jamaat'|'alone'|'qaza'|'pending', ...}, habits: {id:number|boolean}, note:string }
   };
 }
 

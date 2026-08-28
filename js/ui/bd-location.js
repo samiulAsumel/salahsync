@@ -3,15 +3,26 @@
 import { getSettings, updateSettings } from '../core/store.js';
 import { BD_DIVISIONS } from '../data/bd-geo.js';
 import { field } from './form-fields.js';
+import { t, getLang } from '../core/i18n.js';
+
+// Division/district/upazila names have no reliable bulk English transliteration
+// source (same reasoning as world-geo.js's city names) — they stay Bangla-script
+// in both languages; only the field labels and country-name suffix translate.
+const countrySuffix = () => (getLang() === 'en' ? 'Bangladesh' : 'বাংলাদেশ');
+
+// `name` is NOT stored language-baked — it's recomputed from division/district/upazila
+// via bdLocationDisplayName() at render time, so a later language toggle re-translates
+// the country suffix without needing a fresh selection.
+export function bdLocationDisplayName(loc) {
+  return `${loc.upazila}, ${loc.district}, ${countrySuffix()}`;
+}
 
 export function firstBdLocation() {
   const division = BD_DIVISIONS[0];
   const district = division.districts[0];
   const upazila = district.upazilas[0];
-  return {
-    division: division.name, district: district.name, upazila: upazila.n,
-    name: `${upazila.n}, ${district.name}, বাংলাদেশ`, lat: upazila.lat, lon: upazila.lon,
-  };
+  const loc = { division: division.name, district: district.name, upazila: upazila.n, lat: upazila.lat, lon: upazila.lon };
+  return { ...loc, name: bdLocationDisplayName(loc) };
 }
 
 export function bdLocationFields(loc) {
@@ -25,9 +36,9 @@ export function bdLocationFields(loc) {
     `<option value="${u.n}" ${u.n === loc.upazila ? 'selected' : ''}>${u.n}</option>`).join('');
 
   return `
-    ${field('বিভাগ', `<select id="loc-division">${divisionOptions}</select>`)}
-    ${field('জেলা', `<select id="loc-district">${districtOptions}</select>`)}
-    ${field('উপজেলা', `<select id="loc-upazila">${upazilaOptions}</select>`)}
+    ${field(t('loc.division'), `<select id="loc-division">${divisionOptions}</select>`)}
+    ${field(t('loc.district'), `<select id="loc-district">${districtOptions}</select>`)}
+    ${field(t('loc.upazila'), `<select id="loc-upazila">${upazilaOptions}</select>`)}
   `;
 }
 
@@ -52,10 +63,8 @@ export function handleBdLocationInput(e, rerender) {
     upazila = district.upazilas.find((u) => u.n === e.target.value);
   }
 
-  s.location = {
-    ...s.location, division: division.name, district: district.name, upazila: upazila.n,
-    name: `${upazila.n}, ${district.name}, বাংলাদেশ`, lat: upazila.lat, lon: upazila.lon,
-  };
+  const nextLoc = { ...s.location, division: division.name, district: district.name, upazila: upazila.n, lat: upazila.lat, lon: upazila.lon };
+  s.location = { ...nextLoc, name: bdLocationDisplayName(nextLoc) };
   updateSettings(s);
   rerender();
   return true;

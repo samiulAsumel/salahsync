@@ -1,25 +1,19 @@
-import { formatBanglaRange, formatBanglaTime, formatDuration, toBanglaDigits } from '../core/time.js';
-import { PRAYER_LABELS, PRAYER_STATUSES } from '../data/defaults.js';
+import { formatRange, formatTime, formatDuration, toBanglaDigits } from '../core/time.js';
+import { t, tBlock, getLang } from '../core/i18n.js';
+import { PRAYER_STATUSES } from '../data/defaults.js';
 
-const CAT_META = {
-  ibadah: { color: 'var(--forest)', label: 'ইবাদত' },
-  learning: { color: 'var(--gold)', label: 'শেখা' },
-  office: { color: 'var(--navy)', label: 'অফিস' },
-  personal: { color: 'var(--muted)', label: 'ব্যক্তিগত' },
-  rest: { color: '#6b7280', label: 'বিশ্রাম' },
+const CAT_COLOR = {
+  ibadah: 'var(--forest)', learning: 'var(--gold)', office: 'var(--navy)',
+  personal: 'var(--muted)', rest: '#6b7280',
 };
 
-const STAT_CARDS = [
-  { cat: 'sleep', label: 'ঘুম' },
-  { cat: 'learning', label: 'শেখা' },
-  { cat: 'office', label: 'অফিস' },
-  { cat: 'ibadah', label: 'ইবাদত' },
-];
+const STAT_CATS = ['sleep', 'learning', 'office', 'ibadah'];
 
 export function renderStats(container, stats) {
-  const cards = STAT_CARDS.map(({ cat, label }) => {
+  const lang = getLang();
+  const cards = STAT_CATS.map((cat) => {
     const mins = cat === 'sleep' ? (stats.sleepMinutes ?? 0) : (stats.byCat[cat] ?? 0);
-    return `<div class="stat"><span class="stat-num">${formatDuration(mins)}</span><span class="stat-label">${label}</span></div>`;
+    return `<div class="stat"><span class="stat-num">${formatDuration(mins, lang)}</span><span class="stat-label">${t('stat.' + cat)}</span></div>`;
   }).join('');
   container.innerHTML = cards;
 }
@@ -27,49 +21,54 @@ export function renderStats(container, stats) {
 export function renderWarnings(container, warnings) {
   if (!warnings.length) { container.innerHTML = ''; container.classList.add('hidden'); return; }
   container.classList.remove('hidden');
-  container.innerHTML = `<h3>সমন্বয় প্রয়োজন</h3><ul>${warnings.map((w) => `<li>${w}</li>`).join('')}</ul>`;
+  container.innerHTML = `<h3>${t('warnings.header')}</h3><ul>${warnings.map((w) => `<li>${w}</li>`).join('')}</ul>`;
 }
 
 function prayerToggle(block, status) {
-  const buttons = PRAYER_STATUSES.map((s) => {
-    const active = status === s;
-    return `<button type="button" class="ptoggle${active ? ' active' : ''}" data-prayer="${block.prayerKey}" data-status="${s}">${s}</button>`;
+  const buttons = PRAYER_STATUSES.map((code) => {
+    const active = status === code;
+    return `<button type="button" class="ptoggle${active ? ' active' : ''}" data-prayer="${block.prayerKey}" data-status="${code}">${t('prayerStatus.' + code)}</button>`;
   }).join('');
-  return `<div class="prayer-toggle" role="group" aria-label="${PRAYER_LABELS[block.prayerKey] ?? ''} স্ট্যাটাস">${buttons}</div>`;
+  return `<div class="prayer-toggle" role="group" aria-label="${t('prayer.' + block.prayerKey)}">${buttons}</div>`;
 }
 
-function blockRow(block, dayLog) {
-  const meta = CAT_META[block.cat] ?? CAT_META.personal;
-  const timeText = block.end === block.start ? formatBanglaTime(block.start) : formatBanglaRange(block.start, block.end);
+function blockRow(block, dayLog, profileKey) {
+  const lang = getLang();
+  const color = CAT_COLOR[block.cat] ?? CAT_COLOR.personal;
+  const timeText = block.end === block.start ? formatTime(block.start, lang) : formatRange(block.start, block.end, lang);
   const status = block.prayerKey ? (dayLog.prayers?.[block.prayerKey] ?? null) : null;
+  const label = tBlock(profileKey, block.id, 'label') ?? block.id;
+  const note = tBlock(profileKey, block.id, 'note');
   return `
   <li class="row" data-block-id="${block.id}" data-start="${block.start}" data-end="${block.end}">
     <span class="time">${timeText}</span>
-    <span class="spine"><span class="node" style="--dot:${meta.color}"><svg width="7" height="7"><circle cx="3.5" cy="3.5" r="3" fill="${meta.color}"/></svg></span></span>
+    <span class="spine"><span class="node" style="--dot:${color}"><svg width="7" height="7"><circle cx="3.5" cy="3.5" r="3" fill="${color}"/></svg></span></span>
     <div class="content">
-      <p class="activity">${block.label}</p>
-      ${block.note ? `<p class="note">${block.note}</p>` : ''}
-      ${block.durationActual != null ? `<p class="note">নমনীয় সময়: ${formatDuration(block.durationActual)}</p>` : ''}
+      <p class="activity">${label}</p>
+      ${note ? `<p class="note">${note}</p>` : ''}
+      ${block.durationActual != null ? `<p class="note">${t('timeline.flexActual', { duration: formatDuration(block.durationActual, lang) })}</p>` : ''}
       ${block.prayerKey ? prayerToggle(block, status) : ''}
     </div>
   </li>`;
 }
 
 function gapRow(startMin, endMin) {
+  const lang = getLang();
   const mins = endMin - startMin;
   if (mins < 5) return '';
+  const minsText = lang === 'en' ? mins : toBanglaDigits(mins);
   return `
   <li class="row gap-row" data-start="${startMin}" data-end="${endMin}">
-    <span class="time">${formatBanglaRange(startMin, endMin)}</span>
+    <span class="time">${formatRange(startMin, endMin, lang)}</span>
     <span class="spine"><span class="node"></span></span>
-    <div class="content"><p class="activity">ফাঁকা সময়</p><p class="note">${toBanglaDigits(mins)} মিনিট বাফার</p></div>
+    <div class="content"><p class="activity">${t('timeline.freeTime')}</p><p class="note">${t('timeline.bufferMinutes', { n: minsText })}</p></div>
   </li>`;
 }
 
-export function renderTimeline(container, blocks, dayLog) {
+export function renderTimeline(container, blocks, dayLog, profileKey) {
   let html = '';
   for (let i = 0; i < blocks.length; i++) {
-    html += blockRow(blocks[i], dayLog);
+    html += blockRow(blocks[i], dayLog, profileKey);
     const next = blocks[i + 1];
     if (next && next.start > blocks[i].end) html += gapRow(blocks[i].end, next.start);
   }

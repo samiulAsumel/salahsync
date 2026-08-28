@@ -11,11 +11,12 @@ const darccos = (x) => Math.acos(Math.min(1, Math.max(-1, x))) * R2D;
 const darccot = (x) => Math.atan2(1, x) * R2D;
 const fixHour = (h) => (((h % 24) + 24) % 24);
 
+// Display names for these live in i18n (calcMethod.*) — this stays purely computational.
 export const CALC_METHODS = {
-  MWL: { fajr: 18, isha: 17, name: 'মুসলিম ওয়ার্ল্ড লীগ' },
-  KARACHI: { fajr: 18, isha: 18, name: 'করাচি বিশ্ববিদ্যালয়' },
-  EGYPT: { fajr: 19.5, isha: 17.5, name: 'মিশর জেনারেল অথরিটি' },
-  MAKKAH: { fajr: 18.5, ishaMinAfterMaghrib: 90, name: 'উম্মুল কুরা, মক্কা' },
+  MWL: { fajr: 18, isha: 17 },
+  KARACHI: { fajr: 18, isha: 18 },
+  EGYPT: { fajr: 19.5, isha: 17.5 },
+  MAKKAH: { fajr: 18.5, ishaMinAfterMaghrib: 90 },
 };
 
 function julianDate(year, month, day) {

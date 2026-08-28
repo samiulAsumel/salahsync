@@ -1,7 +1,10 @@
 // Default settings — Mongla, Bangladesh baseline matching the original
 // daily-routine.html numbers (Fajr wake 4:00, office 9:00-20:00, 15 min commute).
+// Display text for habits/prayers/etc. lives in i18n/strings.bn.js + strings.en.js —
+// this file keeps only stable ids/codes so language never needs a data migration.
 
 export const DEFAULT_SETTINGS = {
+  language: 'bn', // 'bn' | 'en'
   location: {
     mode: 'preset', // 'preset' = country+city (or BD division/district/upazila) | 'custom' | 'gps'
     country: 'BD', division: 'খুলনা', district: 'বাগেরহাট', upazila: 'মংলা',
@@ -38,23 +41,19 @@ export const DEFAULT_SETTINGS = {
 
   hijriDayOffset: 0,
   theme: 'light',
-  fontFamily: 'nikosh',
 };
 
 export const HABITS = [
-  { id: 'tilawat', label: 'তিলাওয়াত', unit: 'পৃষ্ঠা', type: 'count', target: 5 },
-  { id: 'azkarMorning', label: 'সকালের আজকার', type: 'checkbox' },
-  { id: 'azkarEvening', label: 'সন্ধ্যার আজকার', type: 'checkbox' },
-  { id: 'durood', label: 'দরুদ শরীফ', unit: 'বার', type: 'count', target: 100 },
-  { id: 'istighfar', label: 'ইস্তিগফার', unit: 'বার', type: 'count', target: 100 },
-  { id: 'codingMinutes', label: 'কোডিং', unit: 'মিনিট', type: 'count', target: 180 },
-  { id: 'readingPages', label: 'বই পড়া', unit: 'পৃষ্ঠা', type: 'count', target: 20 },
-  { id: 'exercise', label: 'ব্যায়াম', type: 'checkbox' },
-  { id: 'waterLiters', label: 'পানি', unit: 'লিটার', type: 'count', target: 3 },
+  { id: 'tilawat', unitKey: 'pages', type: 'count', target: 5 },
+  { id: 'azkarMorning', type: 'checkbox' },
+  { id: 'azkarEvening', type: 'checkbox' },
+  { id: 'durood', unitKey: 'times', type: 'count', target: 100 },
+  { id: 'istighfar', unitKey: 'times', type: 'count', target: 100 },
+  { id: 'codingMinutes', unitKey: 'minutes', type: 'count', target: 180 },
+  { id: 'readingPages', unitKey: 'pages', type: 'count', target: 20 },
+  { id: 'exercise', type: 'checkbox' },
+  { id: 'waterLiters', unitKey: 'liters', type: 'count', target: 3 },
 ];
 
-export const PRAYER_LABELS = {
-  fajr: 'ফজর', dhuhr: 'যোহর', asr: 'আসর', maghrib: 'মাগরিব', isha: 'এশা', jumma: 'জুম্মা',
-};
-
-export const PRAYER_STATUSES = ['জামাত', 'একাকী', 'কাযা', 'বাকি'];
+export const PRAYER_KEYS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'jumma'];
+export const PRAYER_STATUSES = ['jamaat', 'alone', 'qaza', 'pending'];

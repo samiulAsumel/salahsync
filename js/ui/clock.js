@@ -1,5 +1,6 @@
-import { nowMinutes, formatBanglaDate, toBanglaDigits, formatDuration } from '../core/time.js';
+import { nowMinutes, formatDate, toBanglaDigits, formatDuration } from '../core/time.js';
 import { toHijri } from '../core/hijri.js';
+import { t, tBlock, getLang } from '../core/i18n.js';
 
 let timer = null;
 
@@ -7,14 +8,18 @@ export function startClock({ onTick, clockEl, dateEl, hijriOffset = 0 }) {
   stopClock();
   const tick = () => {
     const now = new Date();
+    const lang = getLang();
     if (clockEl) {
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      clockEl.textContent = toBanglaDigits(`${h}:${m}`);
+      clockEl.textContent = lang === 'en' ? `${h}:${m}` : toBanglaDigits(`${h}:${m}`);
     }
     if (dateEl) {
-      const hj = toHijri(now, hijriOffset);
-      dateEl.textContent = `${formatBanglaDate(now)} · ${toBanglaDigits(hj.day)} ${hj.monthName} ${toBanglaDigits(hj.year)} হিজরি`;
+      const hj = toHijri(now, hijriOffset, lang);
+      const day = lang === 'en' ? hj.day : toBanglaDigits(hj.day);
+      const year = lang === 'en' ? hj.year : toBanglaDigits(hj.year);
+      const hijriWord = lang === 'en' ? 'AH' : 'হিজরি';
+      dateEl.textContent = `${formatDate(now, lang)} · ${day} ${hj.monthName} ${year} ${hijriWord}`;
     }
     onTick?.(nowMinutes(now));
   };
@@ -27,14 +32,16 @@ export function stopClock() {
   timer = null;
 }
 
-export function renderCountdown(el, blocks, nowMin) {
+export function renderCountdown(el, blocks, nowMin, profileKey) {
   const upcoming = blocks.find((b) => b.start > nowMin);
   const current = [...blocks].reverse().find((b) => b.start <= nowMin && nowMin < b.end);
   if (!el) return;
+  const lang = getLang();
+  const labelOf = (b) => tBlock(profileKey, b.id, 'label') ?? b.id;
   if (current && current.end - nowMin < 240) {
-    el.textContent = `"${current.label}" শেষ হতে আর ${formatDuration(current.end - nowMin)}`;
+    el.textContent = t('countdown.endingIn', { label: labelOf(current), duration: formatDuration(current.end - nowMin, lang) });
   } else if (upcoming) {
-    el.textContent = `পরবর্তী: "${upcoming.label}" — ${formatDuration(upcoming.start - nowMin)} পর`;
+    el.textContent = t('countdown.upcoming', { label: labelOf(upcoming), duration: formatDuration(upcoming.start - nowMin, lang) });
   } else {
     el.textContent = '';
   }

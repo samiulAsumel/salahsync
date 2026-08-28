@@ -1,8 +1,17 @@
-/* Nikosh isn't distributed via any font CDN or apt package — this app tries, in order:
-   1) a Nikosh font already installed on the OS (local())
-   2) a file dropped into assets/fonts/ (see assets/fonts/README.md)
-   3) Hind Siliguri / Noto Sans Bengali from Google Fonts as a safe fallback
-   so Bangla text is never broken even when true Nikosh isn't available. */
+/* Kalpurush is bundled directly (SIL OFL 1.1, see assets/fonts/Kalpurush-LICENSE.txt) —
+   unlike Nikosh below, this one actually ships with the app, so it reliably renders
+   instead of silently falling through to a fallback. */
+@font-face {
+  font-family: 'Kalpurush';
+  src:
+    url('../assets/fonts/Kalpurush.woff2') format('woff2'),
+    url('../assets/fonts/Kalpurush.ttf') format('truetype');
+  font-display: swap;
+}
+
+/* Nikosh isn't distributed via any font CDN or apt package and isn't bundled here —
+   this tries an OS-installed copy (local()) or a file dropped into assets/fonts/
+   (see assets/fonts/README.md) as a second-choice style, purely optional. */
 @font-face {
   font-family: 'Nikosh';
   src:

@@ -2,19 +2,35 @@
 // and a manual "custom" fallback. The timezone is always an IANA name (not a
 // stored offset), so DST regions stay correct — see core/timezone.js.
 import { getSettings, updateSettings } from '../core/store.js';
-import { COUNTRIES, TIMEZONES } from '../data/locations.js';
+import { WORLD_COUNTRIES } from '../data/world-geo.js';
+import { TIMEZONES } from '../data/locations.js';
 import { field, num, text } from './form-fields.js';
 import { toast } from './toast.js';
-import { bdLocationFields, handleBdLocationInput, firstBdLocation } from './bd-location.js';
+import { t, getLang } from '../core/i18n.js';
+import { bdLocationFields, handleBdLocationInput, firstBdLocation, bdLocationDisplayName } from './bd-location.js';
 
 // Transient GPS-detect UI state — never persisted, only drives the settings panel render.
 const gpsState = { status: 'idle', error: null }; // status: idle | detecting | error
 const GPS_ACCURACY_WARN_METERS = 1000;
 
+const countryName = (c) => (getLang() === 'en' ? c.en : c.bn);
+
+// `loc.name` may have been composed in a language the user has since switched
+// away from (stored purely for JSON-export readability) — always re-derive the
+// DISPLAYED name from stable fields (city/country codes, division/district/
+// upazila) so a language toggle retranslates it without a fresh selection.
+export function getLocationDisplayName(loc) {
+  if (loc.mode === 'gps') return `${t('loc.currentLocationName')} (${loc.lat.toFixed(3)}, ${loc.lon.toFixed(3)})`;
+  if (loc.mode === 'custom') return loc.name;
+  if (loc.country === 'BD') return bdLocationDisplayName(loc);
+  const country = WORLD_COUNTRIES.find((c) => c.code === loc.country);
+  return country ? `${loc.city}, ${countryName(country)}` : loc.name;
+}
+
 export function detectGpsLocation(rerender) {
   if (!navigator.geolocation) {
     gpsState.status = 'error';
-    gpsState.error = 'এই ব্রাউজারে GPS সাপোর্ট নেই';
+    gpsState.error = t('loc.gpsNotSupported');
     rerender();
     return;
   }
@@ -27,24 +43,19 @@ export function detectGpsLocation(rerender) {
       const { latitude: lat, longitude: lon, accuracy } = pos.coords;
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Dhaka';
       const s = structuredClone(getSettings());
-      s.location = { mode: 'gps', name: `বর্তমান অবস্থান (${lat.toFixed(3)}, ${lon.toFixed(3)})`, lat, lon, tz, accuracy };
+      s.location = { mode: 'gps', name: `${t('loc.currentLocationName')} (${lat.toFixed(3)}, ${lon.toFixed(3)})`, lat, lon, tz, accuracy };
       updateSettings(s);
       gpsState.status = 'idle';
       rerender();
       // Desktop/laptop browsers have no GPS chip — they estimate from WiFi/IP,
-      // which in Bangladesh often resolves to the ISP's Dhaka exit point rather
-      // than the actual city. >1km accuracy is a sign of that, not a bug here.
+      // which often resolves to the ISP's hub city rather than the actual one.
       toast(accuracy > GPS_ACCURACY_WARN_METERS
-        ? `অবস্থান পাওয়া গেছে, কিন্তু নির্ভুলতা কম (${formatAccuracy(accuracy)}) — ভুল হলে নিচে 'দেশ' থেকে আপনার শহর সরাসরি বেছে নিন`
-        : 'GPS থেকে অবস্থান পাওয়া গেছে');
+        ? t('loc.toastLowAccuracy', { accuracy: formatAccuracy(accuracy) })
+        : t('loc.toastFound'));
     },
     (err) => {
       gpsState.status = 'error';
-      gpsState.error = {
-        1: 'অনুমতি দেওয়া হয়নি — ব্রাউজারের লোকেশন পারমিশন চেক করুন',
-        2: 'অবস্থান পাওয়া যায়নি',
-        3: 'সময় শেষ — আবার চেষ্টা করুন',
-      }[err.code] ?? 'অজানা ত্রুটি';
+      gpsState.error = { 1: t('loc.errPermission'), 2: t('loc.errUnavailable'), 3: t('loc.errTimeout') }[err.code] ?? t('loc.errUnknown');
       rerender();
     },
     { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
@@ -53,53 +64,58 @@ export function detectGpsLocation(rerender) {
 
 function formatAccuracy(meters) {
   if (meters == null) return '';
-  return meters > 1500 ? `±${(meters / 1000).toFixed(1)} কিমি` : `±${Math.round(meters)} মি`;
+  const lang = getLang();
+  if (meters > 1500) return lang === 'en' ? `±${(meters / 1000).toFixed(1)} km` : `±${(meters / 1000).toFixed(1)} কিমি`;
+  return lang === 'en' ? `±${Math.round(meters)} m` : `±${Math.round(meters)} মি`;
 }
 
 export function locationSection(s) {
   const loc = s.location;
-  const gpsLabel = gpsState.status === 'detecting' ? '📍 সনাক্ত করা হচ্ছে…' : '📍 বর্তমান অবস্থান (GPS)';
+  const gpsLabel = gpsState.status === 'detecting' ? t('loc.gpsDetecting') : t('loc.gpsLabel');
   const countryOptions =
     `<option value="gps" ${loc.mode === 'gps' ? 'selected' : ''}>${gpsLabel}</option>` +
-    COUNTRIES.map((c) =>
-      `<option value="${c.code}" ${loc.mode === 'preset' && loc.country === c.code ? 'selected' : ''}>${c.name}</option>`
+    `<option value="BD" ${loc.mode === 'preset' && loc.country === 'BD' ? 'selected' : ''}>${getLang() === 'en' ? 'Bangladesh' : 'বাংলাদেশ'}</option>` +
+    WORLD_COUNTRIES.map((c) =>
+      `<option value="${c.code}" ${loc.mode === 'preset' && loc.country === c.code ? 'selected' : ''}>${countryName(c)}</option>`
     ).join('') +
-    `<option value="custom" ${loc.mode === 'custom' ? 'selected' : ''}>অন্যান্য (কাস্টম)</option>`;
+    `<option value="custom" ${loc.mode === 'custom' ? 'selected' : ''}>${t('loc.custom')}</option>`;
 
   let cityField = '';
+  let cityTz = null;
   if (loc.mode === 'preset' && loc.country === 'BD') {
     cityField = bdLocationFields(loc);
   } else if (loc.mode === 'preset') {
-    const country = COUNTRIES.find((c) => c.code === loc.country) ?? COUNTRIES[0];
+    const country = WORLD_COUNTRIES.find((c) => c.code === loc.country) ?? WORLD_COUNTRIES[0];
     const cityOptions = country.cities.map((c) =>
       `<option value="${c.name}" ${loc.city === c.name ? 'selected' : ''}>${c.name}</option>`
     ).join('');
-    cityField = field('শহর', `<select id="loc-city">${cityOptions}</select>`);
+    cityField = field(t('loc.city'), `<select id="loc-city">${cityOptions}</select>`);
+    cityTz = country.cities.find((c) => c.name === loc.city)?.tz ?? loc.tz;
   }
 
   const customFields = loc.mode === 'custom' ? `
-      ${field('স্থানের নাম', text('location.name', loc.name))}
-      ${field('অক্ষাংশ (Lat)', num('location.lat', loc.lat, 0.0001))}
-      ${field('দ্রাঘিমাংশ (Lon)', num('location.lon', loc.lon, 0.0001))}
-      ${field('টাইমজোন', `<select data-path="location.tz" data-type="string">${TIMEZONES.map((tz) => `<option value="${tz}" ${loc.tz === tz ? 'selected' : ''}>${tz}</option>`).join('')}</select>`)}
+      ${field(t('loc.fieldName'), text('location.name', loc.name))}
+      ${field(t('loc.fieldLat'), num('location.lat', loc.lat, 0.0001))}
+      ${field(t('loc.fieldLon'), num('location.lon', loc.lon, 0.0001))}
+      ${field(t('loc.fieldTz'), `<select data-path="location.tz" data-type="string">${TIMEZONES.map((tz) => `<option value="${tz}" ${loc.tz === tz ? 'selected' : ''}>${tz}</option>`).join('')}</select>`)}
   ` : '';
 
   const gpsAccuracyWarning = loc.mode === 'gps' && loc.accuracy > GPS_ACCURACY_WARN_METERS
-    ? `<p class="note" style="color:var(--danger)">নির্ভুলতা মাত্র ${formatAccuracy(loc.accuracy)} — এটা IP/WiFi-ভিত্তিক আনুমানিক অবস্থান, ডেস্কটপ/ল্যাপটপে GPS চিপ না থাকায় প্রায়ই ISP-র শহর (যেমন ঢাকা) দেখায়। সঠিক না হলে নিচের 'দেশ' থেকে সরাসরি আপনার শহর/উপজেলা বেছে নিন।</p>`
+    ? `<p class="note" style="color:var(--danger)">${t('loc.warningLowAccuracy', { accuracy: formatAccuracy(loc.accuracy) })}</p>`
     : '';
   const gpsNote = loc.mode === 'gps'
     ? (gpsState.status === 'error'
         ? `<p class="note" style="color:var(--danger)">${gpsState.error}</p>`
-        : `<p class="note">${loc.name} · ${loc.lat.toFixed(3)}, ${loc.lon.toFixed(3)} · ${loc.tz}${loc.accuracy ? ` · নির্ভুলতা ${formatAccuracy(loc.accuracy)}` : ''}</p>`) +
+        : `<p class="note">${getLocationDisplayName(loc)} · ${loc.lat.toFixed(3)}, ${loc.lon.toFixed(3)} · ${loc.tz}${loc.accuracy ? ` · ${t('loc.accuracyLabel')} ${formatAccuracy(loc.accuracy)}` : ''}</p>`) +
       gpsAccuracyWarning +
-      `<button type="button" id="btn-gps-refresh" class="btn-file">🔄 আবার সনাক্ত করুন</button>`
+      `<button type="button" id="btn-gps-refresh" class="btn-file">${t('loc.gpsRefresh')}</button>`
     : '';
 
-  const presetNote = loc.mode === 'preset'
-    ? `<p class="note">${loc.name} · ${loc.lat.toFixed(3)}, ${loc.lon.toFixed(3)} · ${COUNTRIES.find((c) => c.code === loc.country)?.tz ?? ''}</p>`
+  const presetNote = loc.mode === 'preset' && loc.country !== 'BD'
+    ? `<p class="note">${getLocationDisplayName(loc)} · ${loc.lat.toFixed(3)}, ${loc.lon.toFixed(3)} · ${cityTz ?? ''}</p>`
     : '';
 
-  return `${field('দেশ', `<select id="loc-country">${countryOptions}</select>`)}${cityField}${customFields}${gpsNote}${presetNote}`;
+  return `${field(t('loc.country'), `<select id="loc-country">${countryOptions}</select>`)}${cityField}${customFields}${gpsNote}${presetNote}`;
 }
 
 // Handles input events targeting the location controls. Returns true if handled
@@ -119,9 +135,9 @@ export function handleLocationInput(e, rerender) {
     } else if (code === 'BD') {
       s.location = { mode: 'preset', country: 'BD', tz: 'Asia/Dhaka', ...firstBdLocation() };
     } else {
-      const country = COUNTRIES.find((c) => c.code === code);
+      const country = WORLD_COUNTRIES.find((c) => c.code === code);
       const city = country.cities[0];
-      s.location = { mode: 'preset', country: code, city: city.name, name: `${city.name}, ${country.name}`, lat: city.lat, lon: city.lon, tz: country.tz };
+      s.location = { mode: 'preset', country: code, city: city.name, name: `${city.name}, ${countryName(country)}`, lat: city.lat, lon: city.lon, tz: city.tz };
     }
     updateSettings(s);
     rerender();
@@ -129,9 +145,9 @@ export function handleLocationInput(e, rerender) {
   }
   if (e.target.id === 'loc-city') {
     const s = structuredClone(getSettings());
-    const country = COUNTRIES.find((c) => c.code === s.location.country);
+    const country = WORLD_COUNTRIES.find((c) => c.code === s.location.country);
     const city = country.cities.find((c) => c.name === e.target.value);
-    s.location = { ...s.location, city: city.name, name: `${city.name}, ${country.name}`, lat: city.lat, lon: city.lon, tz: country.tz };
+    s.location = { ...s.location, city: city.name, name: `${city.name}, ${countryName(country)}`, lat: city.lat, lon: city.lon, tz: city.tz };
     updateSettings(s);
     rerender();
     return true;
