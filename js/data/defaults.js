@@ -38,12 +38,13 @@ export const DEFAULT_SETTINGS = {
   sleep: { bedtime: '23:00', targetHours: 7 },
   durations: {
     tahajjud: 20, sunnahTilawat: 40, jamaatWalk: 15, mosqueReturn: 15,
-    fajrJamaatDuration: 30, jamaatPrayer: 15,
+    // Buffer after every waqt's jamaat before the next activity starts —
+    // same 25 min across all 5 daily prayers (Jumma keeps its own longer duration).
+    jamaatBuffer: 25,
     breakfast: 30, ishaMeal: 30, codingPractice: 30, reading: 60, windDown: 45,
     minMorningCoding: 45, minWeekendCoding: 90,
     weekendEarlyCoding: 210, jummaPrep: 30, jummaDuration: 60, lunchRest: 90,
     eveningLightCoding: 45, afternoonReading: 45, weekReview: 30,
-    officeBreakDhuhr: 15, officeBreakAsr: 10, officeBreakMaghrib: 10,
   },
 
   hijriDayOffset: 0,

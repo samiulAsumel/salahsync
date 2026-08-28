@@ -4,7 +4,7 @@
 import { DEFAULT_SETTINGS } from '../data/defaults.js';
 
 const STORAGE_KEY = 'daily-routine-app:v1';
-export const SCHEMA_VERSION = 5;
+export const SCHEMA_VERSION = 6;
 
 const OLD_STATUS_TO_CODE = { জামাত: 'jamaat', একাকী: 'alone', কাযা: 'qaza', বাকি: 'pending' };
 
@@ -50,6 +50,19 @@ function migrate(raw) {
   delete merged.settings.waqtManualOffset;
   delete merged.settings.fajrMode;
   delete merged.settings.manualFajrJamaat;
+  // v5 → v6: five separate post-jamaat durations (fajrJamaatDuration, jamaatPrayer,
+  // officeBreakDhuhr/Asr/Maghrib) collapsed into one shared jamaatBuffer — every
+  // waqt now gets the same 25-min gap before the next activity starts.
+  if (merged.settings.durations && merged.settings.durations.jamaatBuffer === undefined) {
+    merged.settings.durations.jamaatBuffer = DEFAULT_SETTINGS.durations.jamaatBuffer;
+  }
+  if (merged.settings.durations) {
+    delete merged.settings.durations.fajrJamaatDuration;
+    delete merged.settings.durations.jamaatPrayer;
+    delete merged.settings.durations.officeBreakDhuhr;
+    delete merged.settings.durations.officeBreakAsr;
+    delete merged.settings.durations.officeBreakMaghrib;
+  }
   return merged;
 }
 

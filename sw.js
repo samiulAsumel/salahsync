@@ -1,6 +1,6 @@
 // Network-first app-shell service worker (see the fetch handler below) —
 // the cache exists purely for offline use, not to speed up/gate normal loads.
-const CACHE_NAME = 'daily-routine-v13';
+const CACHE_NAME = 'daily-routine-v14';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './css/app.css', './css/fonts.css',
