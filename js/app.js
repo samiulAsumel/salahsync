@@ -58,7 +58,7 @@ function render() {
   renderTimeline(el('timeline'), result.blocks, dayLog, activeProfile);
   renderHabits(el('habits-panel'), dayLog);
   renderStreakPanel(el('streak-panel'), getState());
-  renderWeeklyChart(el('chart-panel'), getState(), 'codingMinutes', 7);
+  renderWeeklyChart(el('chart-panel'), getState(), 'codingMinutes');
 
   document.querySelectorAll('#tabs [data-profile]').forEach((btn) => {
     btn.classList.toggle('active', btn.dataset.profile === activeProfile);
@@ -98,7 +98,7 @@ function setupTimelineDelegation() {
 function setupHabits() {
   wireHabits(el('habits-panel'), dateKey(), () => {
     renderStreakPanel(el('streak-panel'), getState());
-    renderWeeklyChart(el('chart-panel'), getState(), 'codingMinutes', 7);
+    renderWeeklyChart(el('chart-panel'), getState(), 'codingMinutes');
   });
 }
 
