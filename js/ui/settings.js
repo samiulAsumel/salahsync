@@ -1,6 +1,7 @@
 import { getSettings, updateSettings, resetSettings, exportJSON, importJSON } from '../core/store.js';
 import { CALC_METHODS } from '../core/prayer-times.js';
-import { field, num, time, setPath } from './form-fields.js';
+import { field, num, setPath } from './form-fields.js';
+import { timeField, wireTimePickers } from './time-picker.js';
 import { locationSection, handleLocationInput, detectGpsLocation } from './location-picker.js';
 import { t, getLang } from '../core/i18n.js';
 import { toast } from './toast.js';
@@ -14,8 +15,8 @@ function officeRows(s) {
   return [0, 1, 2, 3, 4].map((d) => `
     <div class="office-row">
       <span>${names[d]}</span>
-      ${time(`office.perDay.${d}.start`, s.office.perDay[d].start)}
-      ${time(`office.perDay.${d}.end`, s.office.perDay[d].end)}
+      ${timeField(`office.perDay.${d}.start`, s.office.perDay[d].start)}
+      ${timeField(`office.perDay.${d}.end`, s.office.perDay[d].end)}
     </div>`).join('');
 }
 
@@ -39,7 +40,7 @@ export function renderSettingsPanel(container) {
 
     <section><h3>${t('settings.sectionFajr')}</h3>
       ${field(t('settings.fieldFajrMode'), `<select data-path="fajrMode" data-type="string"><option value="auto" ${s.fajrMode === 'auto' ? 'selected' : ''}>${t('settings.fajrModeAuto')}</option><option value="manual" ${s.fajrMode === 'manual' ? 'selected' : ''}>${t('settings.fajrModeManual')}</option></select>`)}
-      ${field(t('settings.fieldManualFajr'), time('manualFajrJamaat', s.manualFajrJamaat))}
+      ${field(t('settings.fieldManualFajr'), timeField('manualFajrJamaat', s.manualFajrJamaat))}
     </section>
 
     <section><h3>${t('settings.sectionWaqtOffset')}</h3>${waqtGrid(s)}</section>
@@ -59,7 +60,7 @@ export function renderSettingsPanel(container) {
     <section><h3>${t('settings.sectionCommuteSleep')}</h3>
       ${field(t('settings.fieldCommuteTo'), num('commute.toOffice', s.commute.toOffice))}
       ${field(t('settings.fieldCommuteFrom'), num('commute.fromOffice', s.commute.fromOffice))}
-      ${field(t('settings.fieldBedtime'), time('sleep.bedtime', s.sleep.bedtime))}
+      ${field(t('settings.fieldBedtime'), timeField('sleep.bedtime', s.sleep.bedtime))}
       ${field(t('settings.fieldTargetSleep'), num('sleep.targetHours', s.sleep.targetHours, 0.5))}
       ${field(t('settings.fieldHijriOffset'), num('hijriDayOffset', s.hijriDayOffset))}
     </section>
@@ -100,6 +101,7 @@ export function wireSettingsPanel(container, onChange) {
     updateSettings(s);
     onChange?.();
   };
+  wireTimePickers(container);
 
   container.querySelector('#btn-gps-refresh')?.addEventListener('click', () => detectGpsLocation(rerender));
 

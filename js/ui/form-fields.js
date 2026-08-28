@@ -8,5 +8,7 @@ export function setPath(obj, path, value) {
 
 export const field = (label, input) => `<label class="field"><span>${label}</span>${input}</label>`;
 export const num = (path, val, step = 1) => `<input type="number" step="${step}" data-path="${path}" data-type="number" value="${val}">`;
-export const time = (path, val) => `<input type="time" data-path="${path}" data-type="string" value="${val}">`;
 export const text = (path, val) => `<input type="text" data-path="${path}" data-type="string" value="${val}">`;
+// Time fields use the custom picker in ./time-picker.js instead of native
+// <input type="time"> — its segmented click targets were fiddly and looked
+// inconsistent across browsers.

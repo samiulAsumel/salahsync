@@ -87,6 +87,19 @@ body { min-height: 100vh; }
 .grid-5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: .4rem; }
 .office-row { display: grid; grid-template-columns: 3.2rem 1fr 1fr; gap: .4rem; align-items: center; font-size: .75rem; margin-bottom: .4rem; }
 .office-row input { border: 1px solid var(--line); border-radius: .25rem; padding: .25rem; background: var(--paper); color: var(--ink); }
+
+.time-picker-btn { font-size: .78rem; font-weight: 600; padding: .3rem .5rem; border: 1px solid var(--line); border-radius: .25rem; background: var(--paper); color: var(--ink); cursor: pointer; width: 100%; text-align: center; }
+.time-picker-btn:hover { border-color: var(--forest); color: var(--forest); }
+:root[data-theme="dark"] .time-picker-btn:hover { color: var(--forest); }
+.time-popover { position: fixed; z-index: 60; background: var(--paper); border: 1.5px solid var(--forest); border-radius: .5rem; padding: .7rem; box-shadow: 0 8px 30px rgba(11,52,42,.3); display: flex; flex-direction: column; gap: .5rem; align-items: center; }
+.time-popover.hidden { display: none; }
+.time-popover-row { display: flex; align-items: center; gap: .6rem; }
+.time-popover-row button { width: 1.8rem; height: 1.8rem; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--forest); font-weight: 700; cursor: pointer; }
+.time-popover-row button:hover { background: var(--forest); color: var(--paper); }
+.time-popover-val { min-width: 1.8rem; text-align: center; font-weight: 700; font-size: 1rem; color: var(--forest-deep); }
+:root[data-theme="dark"] .time-popover-val { color: var(--forest); }
+.time-popover-ampm { padding: .25rem .7rem; border: 1px solid var(--forest); border-radius: .3rem; background: var(--forest); color: var(--paper); font-size: .75rem; font-weight: 700; cursor: pointer; }
+
 .data-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
 .data-actions button, .btn-file { font-size: .75rem; padding: .35rem .7rem; border: 1px solid var(--forest); border-radius: .3rem; color: var(--forest); background: transparent; cursor: pointer; }
 
