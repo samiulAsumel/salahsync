@@ -2,7 +2,11 @@
 // daily-routine.html numbers (Fajr wake 4:00, office 9:00-20:00, 15 min commute).
 
 export const DEFAULT_SETTINGS = {
-  location: { name: 'মংলা, বাংলাদেশ', lat: 22.4892, lon: 89.6006, tzOffsetMinutes: 360 },
+  location: {
+    mode: 'preset', // 'preset' = country+city below | 'custom' = manual name/lat/lon/tz
+    country: 'BD', city: 'মংলা',
+    name: 'মংলা, বাংলাদেশ', lat: 22.4892, lon: 89.6006, tz: 'Asia/Dhaka',
+  },
   calcMethod: 'MWL',
   asrMadhab: 'hanafi',
   fajrMode: 'auto', // 'auto' = solar calc | 'manual' = use manualFajrJamaat

@@ -1,5 +1,6 @@
 import { getSettings, updateSettings, resetSettings, exportJSON, importJSON } from '../core/store.js';
 import { CALC_METHODS } from '../core/prayer-times.js';
+import { COUNTRIES, TIMEZONES } from '../data/locations.js';
 import { toast } from './toast.js';
 
 const WD_LABELS = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহস্পতি'];
@@ -25,6 +26,36 @@ const num = (path, val, step = 1) => `<input type="number" step="${step}" data-p
 const time = (path, val) => `<input type="time" data-path="${path}" data-type="string" value="${val}">`;
 const text = (path, val) => `<input type="text" data-path="${path}" data-type="string" value="${val}">`;
 
+function locationSection(s) {
+  const loc = s.location;
+  const countryOptions = COUNTRIES.map((c) =>
+    `<option value="${c.code}" ${loc.mode === 'preset' && loc.country === c.code ? 'selected' : ''}>${c.name}</option>`
+  ).join('') + `<option value="custom" ${loc.mode === 'custom' ? 'selected' : ''}>অন্যান্য (কাস্টম)</option>`;
+
+  let cityField = '';
+  if (loc.mode === 'preset') {
+    const country = COUNTRIES.find((c) => c.code === loc.country) ?? COUNTRIES[0];
+    const cityOptions = country.cities.map((c) =>
+      `<option value="${c.name}" ${loc.city === c.name ? 'selected' : ''}>${c.name}</option>`
+    ).join('');
+    cityField = field('শহর', `<select id="loc-city">${cityOptions}</select>`);
+  }
+
+  const customFields = loc.mode === 'custom' ? `
+      ${field('স্থানের নাম', text('location.name', loc.name))}
+      ${field('অক্ষাংশ (Lat)', num('location.lat', loc.lat, 0.0001))}
+      ${field('দ্রাঘিমাংশ (Lon)', num('location.lon', loc.lon, 0.0001))}
+      ${field('টাইমজোন', `<select data-path="location.tz" data-type="string">${TIMEZONES.map((tz) => `<option value="${tz}" ${loc.tz === tz ? 'selected' : ''}>${tz}</option>`).join('')}</select>`)}
+  ` : '';
+
+  return `
+    ${field('দেশ', `<select id="loc-country">${countryOptions}</select>`)}
+    ${cityField}
+    ${customFields}
+    ${loc.mode === 'preset' ? `<p class="note">${loc.name} · ${loc.lat.toFixed(3)}, ${loc.lon.toFixed(3)} · ${COUNTRIES.find((c) => c.code === loc.country)?.tz ?? ''}</p>` : ''}
+  `;
+}
+
 function officeRows(s) {
   return [0, 1, 2, 3, 4].map((d) => `
     <div class="office-row">
@@ -38,10 +69,7 @@ export function renderSettingsPanel(container) {
   const s = getSettings();
   container.innerHTML = `
     <section><h3>অবস্থান ও হিসাব পদ্ধতি</h3>
-      ${field('স্থানের নাম', text('location.name', s.location.name))}
-      ${field('অক্ষাংশ (Lat)', num('location.lat', s.location.lat, 0.0001))}
-      ${field('দ্রাঘিমাংশ (Lon)', num('location.lon', s.location.lon, 0.0001))}
-      ${field('টাইমজোন অফসেট (মিনিট, UTC থেকে)', num('location.tzOffsetMinutes', s.location.tzOffsetMinutes, 30))}
+      ${locationSection(s)}
       ${field('হিসাব পদ্ধতি', `<select data-path="calcMethod" data-type="string">${Object.entries(CALC_METHODS).map(([k, v]) => `<option value="${k}" ${s.calcMethod === k ? 'selected' : ''}>${v.name}</option>`).join('')}</select>`)}
       ${field('আসরের মাযহাব', `<select data-path="asrMadhab" data-type="string"><option value="hanafi" ${s.asrMadhab === 'hanafi' ? 'selected' : ''}>হানাফি</option><option value="shafi" ${s.asrMadhab === 'shafi' ? 'selected' : ''}>শাফেঈ</option></select>`)}
     </section>
@@ -87,8 +115,36 @@ export function renderSettingsPanel(container) {
   `;
 }
 
+// Assignment-style handlers (container.oninput = ...) instead of addEventListener
+// so re-calling this after an internal re-render (location change, import, reset)
+// never stacks duplicate listeners on the long-lived panel container.
 export function wireSettingsPanel(container, onChange) {
-  container.addEventListener('input', (e) => {
+  container.oninput = (e) => {
+    if (e.target.id === 'loc-country') {
+      const code = e.target.value;
+      const s = structuredClone(getSettings());
+      if (code === 'custom') {
+        s.location = { ...s.location, mode: 'custom' };
+      } else {
+        const country = COUNTRIES.find((c) => c.code === code);
+        const city = country.cities[0];
+        s.location = { mode: 'preset', country: code, city: city.name, name: `${city.name}, ${country.name}`, lat: city.lat, lon: city.lon, tz: country.tz };
+      }
+      updateSettings(s);
+      renderSettingsPanel(container);
+      wireSettingsPanel(container, onChange);
+      onChange?.();
+      return;
+    }
+    if (e.target.id === 'loc-city') {
+      const s = structuredClone(getSettings());
+      const country = COUNTRIES.find((c) => c.code === s.location.country);
+      const city = country.cities.find((c) => c.name === e.target.value);
+      s.location = { ...s.location, city: city.name, name: `${city.name}, ${country.name}`, lat: city.lat, lon: city.lon, tz: country.tz };
+      updateSettings(s);
+      onChange?.();
+      return;
+    }
     const path = e.target.dataset.path;
     if (!path) return;
     const s = structuredClone(getSettings());
@@ -96,7 +152,7 @@ export function wireSettingsPanel(container, onChange) {
     setPath(s, path, e.target.dataset.type === 'number' ? Number(raw) : raw);
     updateSettings(s);
     onChange?.();
-  });
+  };
 
   container.querySelector('#btn-export')?.addEventListener('click', () => {
     const blob = new Blob([exportJSON()], { type: 'application/json' });
@@ -116,6 +172,7 @@ export function wireSettingsPanel(container, onChange) {
       toast('ব্যাকআপ থেকে ডেটা লোড হয়েছে');
       onChange?.();
       renderSettingsPanel(container);
+      wireSettingsPanel(container, onChange);
     } catch {
       toast('ফাইলটি সঠিক নয়', { type: 'error' });
     } finally {
@@ -127,6 +184,7 @@ export function wireSettingsPanel(container, onChange) {
     if (!confirm('সব সেটিংস ডিফল্টে ফিরিয়ে দিতে চান?')) return;
     resetSettings();
     renderSettingsPanel(container);
+    wireSettingsPanel(container, onChange);
     onChange?.();
     toast('সেটিংস রিসেট হয়েছে');
   });

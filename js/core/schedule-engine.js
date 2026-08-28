@@ -11,13 +11,15 @@
 
 import { hhmmToMinutes } from './time.js';
 import { computePrayerTimes } from './prayer-times.js';
+import { getTzOffsetMinutes } from './timezone.js';
 
 function resolveAnchors(settings, weekday) {
+  const today = new Date();
   const raw = computePrayerTimes({
-    date: new Date(),
+    date: today,
     lat: settings.location.lat,
     lon: settings.location.lon,
-    tzOffsetMinutes: settings.location.tzOffsetMinutes,
+    tzOffsetMinutes: getTzOffsetMinutes(settings.location.tz, today),
     method: settings.calcMethod,
     asrMadhab: settings.asrMadhab,
   });

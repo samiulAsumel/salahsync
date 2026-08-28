@@ -4,13 +4,24 @@
 import { DEFAULT_SETTINGS } from '../data/defaults.js';
 
 const STORAGE_KEY = 'daily-routine-app:v1';
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 function migrate(raw) {
   if (!raw || typeof raw !== 'object') return freshState();
   if (raw.version === SCHEMA_VERSION) return raw;
-  // Future migrations append here, e.g.: if (raw.version === 1) { ... raw.version = 2; }
-  return { ...freshState(), ...raw, version: SCHEMA_VERSION };
+  const merged = { ...freshState(), ...raw, version: SCHEMA_VERSION };
+  // v1 → v2: location switched from a flat lat/lon/tzOffsetMinutes to a
+  // country/city preset (or custom) shape with an IANA `tz` string.
+  if (!merged.settings.location?.tz) {
+    merged.settings.location = {
+      ...structuredClone(DEFAULT_SETTINGS.location),
+      name: raw.settings?.location?.name ?? DEFAULT_SETTINGS.location.name,
+      lat: raw.settings?.location?.lat ?? DEFAULT_SETTINGS.location.lat,
+      lon: raw.settings?.location?.lon ?? DEFAULT_SETTINGS.location.lon,
+      mode: 'custom',
+    };
+  }
+  return merged;
 }
 
 function freshState() {
