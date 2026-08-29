@@ -1,6 +1,6 @@
 // Network-first app-shell service worker (see the fetch handler below) —
 // the cache exists purely for offline use, not to speed up/gate normal loads.
-const CACHE_NAME = 'daily-routine-v17';
+const CACHE_NAME = 'daily-routine-v18';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './css/app.css', './css/fonts.css',
@@ -36,9 +36,22 @@ self.addEventListener('activate', (event) => {
 // reload) — the cache is purely an offline fallback, not the default source.
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
-  const isSameOrigin = event.request.url.startsWith(self.location.origin);
+  const url = event.request.url;
+  const isSameOrigin = url.startsWith(self.location.origin);
   if (!isSameOrigin) {
     event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    return;
+  }
+  // Fonts/icons under assets/ never change without a filename bump — serve them
+  // cache-first so mobile users on slow/flaky connections aren't re-fetching the
+  // Bangla font on every load, which showed up as a visible fallback-font flash.
+  if (url.includes('/assets/')) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => cached || fetch(event.request).then((res) => {
+        if (res.ok) caches.open(CACHE_NAME).then((cache) => cache.put(event.request, res.clone()));
+        return res;
+      }))
+    );
     return;
   }
   event.respondWith(
