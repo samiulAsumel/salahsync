@@ -6,9 +6,9 @@
   --bg-glow: color-mix(in srgb, var(--gold) 12%, var(--bg));
 }
 :root[data-theme="dark"] {
-  --paper: #1B1F19; --ink: #EDE9DD; --muted: #A2A995;
-  --forest: #4CAF8C; --forest-deep: #7FD9B6; --gold: #D8B978; --gold-soft: #3A331F;
-  --line: #3A3F33; --navy: #7FA8D9; --bg: #0F120E; --card-bg: #23271E;
+  --paper: #0D0D0D; --ink: #EDE3C8; --muted: #9C8F6E;
+  --forest: #D4AF37; --forest-deep: #F0C24B; --gold: #E3B84C; --gold-soft: #2A2410;
+  --line: #33291A; --navy: #7FA8D9; --bg: #000000; --card-bg: #171310;
   --bg-glow: color-mix(in srgb, var(--forest) 18%, var(--bg));
 }
 * { box-sizing: border-box; }
