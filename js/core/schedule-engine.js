@@ -41,6 +41,14 @@ function durationOf(spec, durations) {
   return 0;
 }
 
+// A flex block's `min` is either a literal number (e.g. windDown's 15) or a
+// duration-key string (e.g. 'minMorningCoding') — resolve the latter so the
+// too-short comparison actually runs against a number, not the key itself.
+function minOf(min, durations) {
+  if (typeof min === 'string') return durations[min] ?? 0;
+  return min || 0;
+}
+
 /**
  * @param {Array} template block specs for one profile (workday/friday/saturday)
  * @param {Object} settings full settings object
@@ -60,10 +68,11 @@ export function resolveSchedule(template, settings, weekday, profileKey) {
   const closeFlex = (startOfNext) => {
     if (!pendingFlex) return;
     const actual = startOfNext - pendingFlex.start;
+    const min = minOf(pendingFlex.min, durations);
     if (actual < 0) {
       warnings.push(t('warnings.flexNegative', { label: labelOf(pendingFlex) }));
-    } else if (pendingFlex.min && actual < pendingFlex.min) {
-      warnings.push(t('warnings.flexShort', { label: labelOf(pendingFlex), actual, min: pendingFlex.min }));
+    } else if (min && actual < min) {
+      warnings.push(t('warnings.flexShort', { label: labelOf(pendingFlex), actual, min }));
     }
     pendingFlex.end = startOfNext;
     pendingFlex.durationActual = Math.max(0, actual);
@@ -113,7 +122,7 @@ export function resolveSchedule(template, settings, weekday, profileKey) {
     byId.set(spec.id, resolved);
   }
 
-  if (pendingFlex) closeFlex(pendingFlex.start + (pendingFlex.min || 0));
+  if (pendingFlex) closeFlex(pendingFlex.start + minOf(pendingFlex.min, durations));
 
   const sleepBlock = blocks.find((b) => b.id === 'sleep');
   const wakeAnchorBlock = blocks[0];

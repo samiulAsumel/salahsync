@@ -1,5 +1,7 @@
 # SalahSync — দৈনিক রুটিন (Muslim Daily Life Tracker)
 
+[![CI](https://github.com/samiulAsumel/salahsync/actions/workflows/ci.yml/badge.svg)](https://github.com/samiulAsumel/salahsync/actions/workflows/ci.yml)
+
 ফজরের ওয়াক্ত (বা লোকেশন) সেট করলেই সারাদিনের রুটিন — তাহাজ্জুদ থেকে ঘুম পর্যন্ত — স্বয়ংক্রিয়ভাবে
 তৈরি হয়। অফিসের শুরু/শেষ সময়, যাতায়াতের সময়, প্রতিটি ওয়াক্তের জামাত অফসেট — সব কিছু সমন্বয় করা যায়,
 আর বাকি সব সময়সূচি (নামাজ, কোডিং শেখা, বিরতি, ঘুম) নিজে থেকেই পুনর্গণনা হয়।
@@ -16,6 +18,15 @@
 
 ES modules ব্যবহার করা হয়েছে বলে সরাসরি ফাইল ডাবল-ক্লিক করে (file://) খোলা যাবে না — একটি local
 server লাগবে (PWA ইনস্টলের জন্যও এটা দরকার হতো)।
+
+## টেস্ট
+
+```bash
+npm install
+npm test        # core/*.js-এর pure logic (প্রার্থনার সময়, শিডিউল ইঞ্জিন) — Vitest
+```
+
+প্রতিটি push/PR-এ GitHub Actions (`.github/workflows/ci.yml`) স্বয়ংক্রিয়ভাবে একই টেস্ট চালায়।
 
 ## প্রধান বৈশিষ্ট্য
 
