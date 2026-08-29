@@ -13,10 +13,7 @@ const withinOffice = (anchors, key) =>
 const wake = { id: 'wake', cat: 'ibadah', start: { anchor: 'wakeUp' }, duration: 0 };
 const tahajjud = { id: 'tahajjud', cat: 'ibadah', start: { after: 'wake' }, duration: 'tahajjud' };
 const fajrJamaat = { id: 'fajrJamaat', cat: 'ibadah', prayerKey: 'fajr', start: { anchor: 'fajrJamaat' }, duration: 'jamaatBuffer' };
-// Same slot on every profile: right after the Fajr routine, before the day's
-// first focused block — the morning's only guaranteed daylight+empty-stomach
-// window, so it eats into flex time (morningCode/lateCoding) rather than
-// competing with office or ibadah anchors.
+// Shared across profiles — right after the Fajr routine, before the day's first coding block.
 const exercise = { id: 'exercise', cat: 'personal', duration: 'exercise' };
 
 export const WORKDAY = [
