@@ -91,13 +91,13 @@ html[lang="en"] #app-title { font-family: 'Times New Roman', Times, Georgia, ser
 .habit-count { flex-wrap: wrap; }
 .habit-name em { color: var(--muted); font-style: normal; }
 
-.chart-row { display: flex; align-items: center; gap: .6rem; padding: .3rem 0; }
-.chart-day { width: 5.2rem; flex-shrink: 0; font-size: .78rem; color: var(--muted); }
-.chart-row.is-today .chart-day { color: var(--forest); font-weight: 700; }
-.chart-bar-track { flex: 1; height: 14px; background: var(--line); border-radius: 999px; overflow: hidden; }
-.chart-bar-fill { height: 100%; background: var(--forest); border-radius: 999px; opacity: .5; }
-.chart-row.is-today .chart-bar-fill { opacity: 1; }
-@media (max-width: 400px) { .chart-day { width: 3.6rem; font-size: .7rem; } }
+.chart-cols { display: flex; align-items: flex-end; gap: .5rem; height: 150px; }
+.chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; min-width: 0; }
+.chart-col-track { flex: 1; width: 100%; display: flex; align-items: flex-end; }
+.chart-col-fill { width: 100%; min-height: 3px; background: var(--forest); border-radius: .25rem .25rem 0 0; opacity: .5; }
+.chart-col.is-today .chart-col-fill { opacity: 1; }
+.chart-col-day { margin-top: .4rem; font-size: .66rem; line-height: 1.15; color: var(--muted); text-align: center; word-break: break-word; }
+.chart-col.is-today .chart-col-day { color: var(--forest); font-weight: 700; }
 
 .streak-card { border: 1.5px solid var(--forest); border-radius: .4rem; padding: .6rem; text-align: center; flex: 1; }
 .streak-num { display: block; font-size: 1.3rem; font-weight: 700; color: var(--forest-deep); }

@@ -63,15 +63,15 @@ export function renderWeeklyChart(container, state, habitId) {
   const todayKey = dateKey(new Date());
   const values = dates.map((d) => Number(state.logs[dateKey(d)]?.habits?.[habitId]) || 0);
   const max = Math.max(1, ...values);
-  const rows = dates.map((d, i) => {
+  const cols = dates.map((d, i) => {
     const v = values[i];
     const pct = Math.max(v > 0 ? 4 : 0, (v / max) * 100);
     const isToday = dateKey(d) === todayKey;
     return `
-    <div class="chart-row${isToday ? ' is-today' : ''}">
-      <span class="chart-day">${weekdayNames[d.getDay()]}</span>
-      <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%"></div></div>
+    <div class="chart-col${isToday ? ' is-today' : ''}">
+      <div class="chart-col-track"><div class="chart-col-fill" style="height:${pct}%"></div></div>
+      <span class="chart-col-day">${weekdayNames[d.getDay()]}</span>
     </div>`;
   }).join('');
-  container.innerHTML = rows;
+  container.innerHTML = `<div class="chart-cols">${cols}</div>`;
 }
