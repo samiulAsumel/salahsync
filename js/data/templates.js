@@ -13,6 +13,11 @@ const withinOffice = (anchors, key) =>
 const wake = { id: 'wake', cat: 'ibadah', start: { anchor: 'wakeUp' }, duration: 0 };
 const tahajjud = { id: 'tahajjud', cat: 'ibadah', start: { after: 'wake' }, duration: 'tahajjud' };
 const fajrJamaat = { id: 'fajrJamaat', cat: 'ibadah', prayerKey: 'fajr', start: { anchor: 'fajrJamaat' }, duration: 'jamaatBuffer' };
+// Same slot on every profile: right after the Fajr routine, before the day's
+// first focused block — the morning's only guaranteed daylight+empty-stomach
+// window, so it eats into flex time (morningCode/lateCoding) rather than
+// competing with office or ibadah anchors.
+const exercise = { id: 'exercise', cat: 'personal', duration: 'exercise' };
 
 export const WORKDAY = [
   wake,
@@ -20,7 +25,8 @@ export const WORKDAY = [
   { id: 'sunnahTilawat', cat: 'ibadah', start: { after: 'tahajjud' }, duration: 'sunnahTilawat' },
   fajrJamaat,
   { id: 'mosqueReturn', cat: 'personal', start: { after: 'fajrJamaat' }, duration: 'mosqueReturn' },
-  { id: 'morningCode', cat: 'learning', start: { after: 'mosqueReturn' }, flex: true, min: 'minMorningCoding' },
+  { ...exercise, start: { after: 'mosqueReturn' } },
+  { id: 'morningCode', cat: 'learning', start: { after: 'exercise' }, flex: true, min: 'minMorningCoding' },
   { id: 'breakfast', cat: 'personal', end: { anchor: 'leaveHome' }, duration: 'breakfast' },
   { id: 'leaveHome', cat: 'office', start: { anchor: 'leaveHome' }, duration: 0 },
   // Each office segment's end falls back to officeEnd if the next prayer time
@@ -45,7 +51,8 @@ export const FRIDAY = [
   tahajjud,
   { id: 'sunnahTilawat', cat: 'ibadah', start: { after: 'tahajjud' }, duration: 'sunnahTilawat' },
   fajrJamaat,
-  { id: 'earlyCoding', cat: 'learning', start: { after: 'fajrJamaat' }, duration: 'weekendEarlyCoding' },
+  { ...exercise, start: { after: 'fajrJamaat' } },
+  { id: 'earlyCoding', cat: 'learning', start: { after: 'exercise' }, duration: 'weekendEarlyCoding' },
   { id: 'breakfast', cat: 'personal', start: { after: 'earlyCoding' }, duration: 'breakfast' },
   { id: 'lateCoding', cat: 'learning', start: { after: 'breakfast' }, flex: true, min: 'minWeekendCoding' },
   { id: 'jummaPrep', cat: 'ibadah', end: { anchor: 'jummaGo' }, duration: 'jummaPrep' },
@@ -67,7 +74,8 @@ export const SATURDAY = [
   tahajjud,
   { id: 'sunnahTilawat', cat: 'ibadah', start: { after: 'tahajjud' }, duration: 'sunnahTilawat' },
   fajrJamaat,
-  { id: 'earlyCoding', cat: 'learning', start: { after: 'fajrJamaat' }, duration: 'weekendEarlyCoding' },
+  { ...exercise, start: { after: 'fajrJamaat' } },
+  { id: 'earlyCoding', cat: 'learning', start: { after: 'exercise' }, duration: 'weekendEarlyCoding' },
   { id: 'breakfast', cat: 'personal', start: { after: 'earlyCoding' }, duration: 'breakfast' },
   { id: 'lateCoding', cat: 'learning', start: { after: 'breakfast' }, flex: true, min: 'minWeekendCoding' },
   { id: 'dhuhr', cat: 'ibadah', prayerKey: 'dhuhr', start: { anchor: 'dhuhrJamaat' }, duration: 'jamaatBuffer' },

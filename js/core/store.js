@@ -4,7 +4,7 @@
 import { DEFAULT_SETTINGS } from '../data/defaults.js';
 
 const STORAGE_KEY = 'daily-routine-app:v1';
-export const SCHEMA_VERSION = 6;
+export const SCHEMA_VERSION = 7;
 
 const OLD_STATUS_TO_CODE = { জামাত: 'jamaat', একাকী: 'alone', কাযা: 'qaza', বাকি: 'pending' };
 
@@ -62,6 +62,10 @@ function migrate(raw) {
     delete merged.settings.durations.officeBreakDhuhr;
     delete merged.settings.durations.officeBreakAsr;
     delete merged.settings.durations.officeBreakMaghrib;
+  }
+  // v6 → v7: added a post-Fajr exercise/walk block to every profile.
+  if (merged.settings.durations && merged.settings.durations.exercise === undefined) {
+    merged.settings.durations.exercise = DEFAULT_SETTINGS.durations.exercise;
   }
   return merged;
 }
