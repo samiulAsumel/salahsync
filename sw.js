@@ -1,6 +1,6 @@
 // Network-first app-shell service worker (see the fetch handler below) —
 // the cache exists purely for offline use, not to speed up/gate normal loads.
-const CACHE_NAME = 'daily-routine-v18';
+const CACHE_NAME = 'daily-routine-v19';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './css/app.css', './css/fonts.css',
@@ -54,8 +54,12 @@ self.addEventListener('fetch', (event) => {
     );
     return;
   }
+  // cache: 'no-store' bypasses the browser's own HTTP cache — without it, a
+  // plain fetch() can still return a heuristically-cached stale response
+  // (e.g. behind a host that sends no explicit Cache-Control), silently
+  // defeating the "every reload gets the latest deploy" intent above.
   event.respondWith(
-    fetch(event.request)
+    fetch(event.request, { cache: 'no-store' })
       .then((res) => {
         if (res.ok) caches.open(CACHE_NAME).then((cache) => cache.put(event.request, res.clone()));
         return res;
