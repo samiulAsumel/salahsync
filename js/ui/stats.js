@@ -63,16 +63,17 @@ export function renderWeeklyChart(container, state, habitId) {
   const todayKey = dateKey(new Date());
   const values = dates.map((d) => Number(state.logs[dateKey(d)]?.habits?.[habitId]) || 0);
   const max = Math.max(1, ...values);
-  const days = dates.length;
-  const w = 280, h = 90, barW = w / days - 6;
-  const bars = values.map((v, i) => {
-    const barH = Math.max(2, (v / max) * (h - 20));
-    const x = i * (w / days) + 3;
-    const y = h - barH - 16;
-    const label = weekdayNames[dates[i].getDay()].slice(0, 1);
-    const isToday = dateKey(dates[i]) === todayKey;
-    return `<rect x="${x}" y="${y}" width="${barW}" height="${barH}" rx="2" fill="var(--forest)" opacity="${isToday ? 1 : 0.55}"/>
-      <text x="${x + barW / 2}" y="${h - 4}" text-anchor="middle" font-size="9" fill="var(--muted)">${label}</text>`;
+  const digits = (n) => (lang === 'en' ? n : toBanglaDigits(n));
+  const rows = dates.map((d, i) => {
+    const v = values[i];
+    const pct = Math.max(v > 0 ? 4 : 0, (v / max) * 100);
+    const isToday = dateKey(d) === todayKey;
+    return `
+    <div class="chart-row${isToday ? ' is-today' : ''}">
+      <span class="chart-day">${weekdayNames[d.getDay()]}</span>
+      <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%"></div></div>
+      <span class="chart-val">${digits(v)}</span>
+    </div>`;
   }).join('');
-  container.innerHTML = `<svg viewBox="0 0 ${w} ${h}" class="w-full h-24">${bars}</svg>`;
+  container.innerHTML = rows;
 }
