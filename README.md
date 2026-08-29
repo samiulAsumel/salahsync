@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/samiulAsumel/salahsync/actions/workflows/ci.yml/badge.svg)](https://github.com/samiulAsumel/salahsync/actions/workflows/ci.yml)
 
+**Live:** [salahsync.pages.dev](https://salahsync.pages.dev/)
+
 ফজরের ওয়াক্ত (বা লোকেশন) সেট করলেই সারাদিনের রুটিন — তাহাজ্জুদ থেকে ঘুম পর্যন্ত — স্বয়ংক্রিয়ভাবে
 তৈরি হয়। অফিসের শুরু/শেষ সময়, যাতায়াতের সময়, প্রতিটি ওয়াক্তের জামাত অফসেট — সব কিছু সমন্বয় করা যায়,
 আর বাকি সব সময়সূচি (নামাজ, কোডিং শেখা, বিরতি, ঘুম) নিজে থেকেই পুনর্গণনা হয়।
