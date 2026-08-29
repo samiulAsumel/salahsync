@@ -1,7 +1,7 @@
 import { getState, getSettings, getDayLog, setPrayerStatus, updateSettings } from './core/store.js';
 import { resolveSchedule } from './core/schedule-engine.js';
 import { PROFILES, profileForWeekday } from './data/templates.js';
-import { dateKey, todayProfile } from './core/time.js';
+import { dateKey, todayProfile, WEEKDAY_NAMES_BN, WEEKDAY_NAMES_EN } from './core/time.js';
 import { t, getLang } from './core/i18n.js';
 import { renderTimeline, renderStats, renderWarnings, highlightNow } from './ui/renderer.js';
 import { renderHabits, wireHabits } from './ui/tracker.js';
@@ -24,6 +24,11 @@ function currentWeekdayForProfile(profileKey) {
   return real >= 0 && real <= 4 ? real : 0;
 }
 
+function renderFooterDayName() {
+  const names = getLang() === 'en' ? WEEKDAY_NAMES_EN : WEEKDAY_NAMES_BN;
+  el('footer-day-name').textContent = names[new Date().getDay()];
+}
+
 function renderChrome() {
   document.documentElement.lang = getLang();
   el('app-eyebrow').textContent = t('app.eyebrow');
@@ -33,6 +38,7 @@ function renderChrome() {
   el('settings-title-text').textContent = t('settingsTitle');
   el('footer-location').textContent = getLocationDisplayName(getSettings().location);
   el('footer-app-name').textContent = t('footer.appName');
+  renderFooterDayName();
   el('theme-toggle').title = t('tooltip.theme');
   el('install-btn').title = t('tooltip.install');
   el('print-btn').title = t('tooltip.print');
@@ -52,6 +58,7 @@ function render() {
   const dayLog = getDayLog(today);
 
   el('footer-location').textContent = getLocationDisplayName(settings.location);
+  renderFooterDayName();
   renderPrayerPanel(el('prayer-panel'), result.anchors);
   renderStats(el('stats-cards'), result.stats);
   renderWarnings(el('warnings-banner'), result.warnings);
