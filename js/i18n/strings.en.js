@@ -3,7 +3,7 @@ export const STRINGS_EN = {
   app: { eyebrow: 'Muslim Daily Life Tracker', title: 'SalahSync' },
   tabs: { workday: 'Workday', friday: 'Friday', saturday: 'Saturday' },
   profile: {
-    workday: { sub: 'Sun – Thu' }, friday: { sub: 'Weekly Off' }, saturday: { sub: 'Weekly Off' },
+    workday: { sub: 'Sunday – Thursday' }, friday: { sub: 'Weekly Off' }, saturday: { sub: 'Weekly Off' },
   },
   section: { habits: "Today's Amal Tracker", progress: 'Progress', prayerTimes: "Today's Prayer Times" },
   footer: { appName: 'SalahSync' },

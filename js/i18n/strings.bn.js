@@ -3,7 +3,7 @@ export const STRINGS_BN = {
   app: { eyebrow: 'মুসলিম ডেইলি লাইফ ট্র্যাকার', title: 'SalahSync' },
   tabs: { workday: 'কর্মদিবস', friday: 'জুম্মাবার', saturday: 'শনিবার' },
   profile: {
-    workday: { sub: 'রবি – বৃহস্পতি' }, friday: { sub: 'সাপ্তাহিক ছুটি' }, saturday: { sub: 'সাপ্তাহিক ছুটি' },
+    workday: { sub: 'রবিবার – বৃহস্পতিবার' }, friday: { sub: 'সাপ্তাহিক ছুটি' }, saturday: { sub: 'সাপ্তাহিক ছুটি' },
   },
   section: { habits: 'আজকের আমল ট্র্যাকার', progress: 'অগ্রগতি', prayerTimes: 'আজকের নামাজের সময়' },
   footer: { appName: 'SalahSync' },
