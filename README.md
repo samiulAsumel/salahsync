@@ -1,8 +1,57 @@
-# SalahSync — দৈনিক রুটিন (Muslim Daily Life Tracker)
+# SalahSync — Muslim Daily Routine Tracker
 
 [![CI](https://github.com/samiulAsumel/salahsync/actions/workflows/ci.yml/badge.svg)](https://github.com/samiulAsumel/salahsync/actions/workflows/ci.yml)
 
-**Live:** [salahsync.pages.dev](https://salahsync.pages.dev/)
+**Live:** [salahsync.pages.dev](https://salahsync.pages.dev/) · Bangla documentation follows the English section below.
+
+An installable, offline-first PWA that builds a full daily schedule around computed prayer times.
+Set your Fajr time (or location) and office hours once; everything else — Tahajjud, Sunnah prayers,
+jamaah breaks, learning time, sleep — is recalculated automatically. It replaced a static printed
+routine sheet that had to be redrawn by hand whenever prayer times shifted.
+
+## Features
+
+- **Automatic schedule:** one Fajr/location input and per-weekday office hours drive the whole day
+  (`js/core/schedule-engine.js`). Day templates are declarative: a block can be anchored to a prayer
+  time, chained after another block, span an explicit range, or flex to fill a gap.
+- **Offline prayer times:** computed client-side with the praytimes.org solar algorithm, so no API is
+  needed (`js/core/prayer-times.js`).
+- **Three day profiles:** workday, Friday and Saturday, each with its own structure.
+- **Prayer and habit tracker:** jamaah / alone / qaza / pending per prayer, plus recitation, durood,
+  coding and reading logs, with streaks and a weekly chart. Stored in `localStorage`.
+- **Global locations:** about 243 countries with major cities (per-city timezones, so multi-timezone
+  countries stay correct), the full Bangladesh division → district → upazila hierarchy, live GPS, or a
+  manual custom entry.
+- **Bilingual UI:** a Bangla/English toggle swaps every label at once (`js/core/i18n.js`,
+  `js/i18n/strings.{bn,en}.js`). A Bangla typeface is bundled under the SIL OFL licence.
+- **PWA:** installable, offline support, network-first service worker so the newest version loads
+  whenever you are online. Also dark mode, Hijri dates, and print-friendly A4 output.
+- **Backup:** export and import all settings and daily logs as a single JSON file.
+
+## Run and test
+
+```bash
+./serve.sh          # http://localhost:8080 (needs a local server: ES modules do not run from file://)
+npm install
+npm test            # Vitest unit tests for the pure logic in js/core/
+```
+
+GitHub Actions runs the same tests on every push and pull request.
+
+## Structure
+
+```
+index.html      app shell
+css/            fonts.css (bundled Bangla font), app.css (theme, timeline, print)
+js/core/        time, prayer-time, Hijri, i18n, schedule engine, storage
+js/data/        default settings, day-block templates, world and Bangladesh geo data
+js/i18n/        strings.bn.js / strings.en.js
+js/ui/          renderer, settings, location picker, tracker, stats, clock
+```
+
+---
+
+## Bangla documentation (original)
 
 ফজরের ওয়াক্ত (বা লোকেশন) সেট করলেই সারাদিনের রুটিন — তাহাজ্জুদ থেকে ঘুম পর্যন্ত — স্বয়ংক্রিয়ভাবে
 তৈরি হয়। অফিসের শুরু/শেষ সময়, যাতায়াতের সময়, প্রতিটি ওয়াক্তের জামাত অফসেট — সব কিছু সমন্বয় করা যায়,
